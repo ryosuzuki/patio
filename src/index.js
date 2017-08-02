@@ -3,6 +3,7 @@ let update = true
 
 let stage = new createjs.Stage("canvas");
 stage.enableMouseOver(10);
+// createjs.Touch.enable(stage)
 
 let panel = new createjs.Shape()
 panel.graphics.beginFill('#eee')
@@ -32,13 +33,62 @@ box.on('pressmove', (e) => {
   update = true
 })
 
+let line
+box.on('pressup', (e) => {
+  console.log('up')
+
+  line = new createjs.Shape()
+  line.graphics.setStrokeStyle(3)
+  line.graphics.beginStroke('#000')
+  line.graphics.moveTo(e.stageX - 100, e.stageY)
+  line.graphics.lineTo(e.stageX + 400, e.stageY)
+  line.graphics.endStroke()
+  stage.addChild(line);
+
+  let label = new createjs.Text("0", "18px Arial", "#000");
+  label.x = e.stageX - 100
+  label.y = e.stageY - 30
+  stage.addChild(label);
+
+  label = new createjs.Text("100", "18px Arial", "#000");
+  label.x = e.stageX + 400
+  label.y = e.stageY - 30
+  stage.addChild(label);
+
+  marker.label = new createjs.Text("20", "18px Arial", "#000");
+  marker.label.x = e.stageX
+  marker.label.y = e.stageY - 30
+  stage.addChild(marker.label);
+
+  marker.start = e.stageX - 100
+
+  update = true
+
+})
+
 stage.addChild(box);
+
+
 
 
 const addMarker = () => {
   let marker = new createjs.Shape()
   marker.graphics.beginFill('#f00')
   marker.graphics.drawRect(-5, -5, 10, 10)
+
+  marker.on('mousedown', (e) => {
+    console.log('down')
+
+  })
+
+  marker.on('pressmove', (e) => {
+    console.log('move')
+    marker.x = e.stageX
+    marker.label.text = Math.floor((marker.x - marker.start) / 500 * 100)
+    marker.label.x = e.stageX
+    update = true
+  })
+
   stage.addChild(marker)
   return marker
 }
