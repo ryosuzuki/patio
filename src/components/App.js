@@ -5,12 +5,12 @@ import actions from '../redux/actions'
 import 'yuki-createjs'
 
 import Marker from './Marker'
+import Sidebar from './Sidebar'
 
 class App extends Component {
   constructor(props) {
     super(props)
     window.app = this
-
     this.update = true
   }
 
@@ -32,6 +32,7 @@ class App extends Component {
   render() {
     return (
       <div>
+        <Sidebar />
         <canvas ref="canvas" id="canvas" width="1000" height="800"></canvas>
       </div>
     )
