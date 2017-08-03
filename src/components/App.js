@@ -4,18 +4,29 @@ import { bindActionCreators } from 'redux'
 import actions from '../redux/actions'
 import 'yuki-createjs'
 
+import Marker from './Marker'
+
 class App extends Component {
   constructor(props) {
     super(props)
     window.app = this
 
     this.update = true
-    let canvas = this.findDOMNode(this.refs.canvas);
-    this.stage = new createjs.Stage(canvas);
-    // this.stage.enableMouseOver(10);
   }
 
   componentDidMount() {
+    this.stage = new createjs.Stage(this.refs.canvas)
+    this.stage.enableMouseOver(10)
+    createjs.Touch.enable(this.stage)
+    createjs.Ticker.addEventListener('tick', this.tick.bind(this))
+    this.marker = new Marker(this)
+  }
+
+  tick(event) {
+    if (this.update) {
+      this.update = false
+      this.stage.update(event)
+    }
   }
 
   render() {

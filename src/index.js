@@ -30,12 +30,3 @@ render(
   document.getElementById('react-app')
 )
 
-/*
-createjs.Touch.enable(app.stage)
-createjs.Ticker.addEventListener('tick', (event) => {
-  if (app.update) {
-    app.update = false
-    app.stage.update(event)
-  }
-})
-*/
