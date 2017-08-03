@@ -2,6 +2,7 @@
 import Marker from './components/Marker'
 import Variable from './components/Variable'
 import Panel from './components/Panel'
+import Select from './components/Select'
 
 
 class App {
@@ -12,10 +13,13 @@ class App {
     this.stage.enableMouseOver(10);
     createjs.Touch.enable(this.stage)
     createjs.Ticker.addEventListener('tick', tick);
+
+    this.select = new Select(this)
   }
 }
 
 let app = new App()
+window.app = app
 
 let panel = new Panel(app)
 panel.add('Marker', '#f00')
