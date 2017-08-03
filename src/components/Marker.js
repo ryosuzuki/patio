@@ -1,5 +1,4 @@
 
-
 class Marker extends createjs.Shape {
   constructor() {
     super()
@@ -25,6 +24,18 @@ class Marker extends createjs.Shape {
 
   clear() {
     this.circle.graphics.clear()
+    if (this.original) {
+      this.original.graphics.clear()
+      this.original.circle.graphics.clear()
+    }
+    this.app.update = true
+  }
+
+  show() {
+    this.circle.graphics.beginFill('#00f')
+    this.circle.graphics.drawCircle(0, 0, 20)
+    this.circle.x = this.x
+    this.circle.y = this.y
   }
 
   move(pos) {
@@ -33,11 +44,20 @@ class Marker extends createjs.Shape {
     this.x = pos.x
     this.y = pos.y
     if (this.isSelect || this.isRecord) {
-      this.circle.graphics.beginFill('#00f')
-      this.circle.graphics.drawCircle(0, 0, 20)
-      this.circle.x = this.x
-      this.circle.y = this.y
+      this.show()
     }
+
+    let commands = this.app.props.commands
+    let command = commands.pop()
+    if (command) {
+      command.attr = {
+        x: this.x,
+        y: this.y,
+      }
+      commands = [...commands, command]
+      this.app.updateState({ commands: commands })
+    }
+
     this.app.update = true
   }
 

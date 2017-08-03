@@ -31,7 +31,6 @@ class App extends Component {
   }
 
   updateState(state) {
-    // debugger
     this.props.store.dispatch(actions.updateState(state))
     // this.props.store.dispatch(actions.updateState(Object.assign(this.props.state, state)))
   }

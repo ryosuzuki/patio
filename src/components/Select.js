@@ -62,6 +62,16 @@ class Select extends createjs.Shape {
       this.labels[0].x = (objects[0].x + objects[1].x) / 2 + 10
       this.labels[0].y = (objects[0].y + objects[1].y) / 2 + 10
 
+      let commands = this.app.props.commands
+      let command = commands.pop()
+      if (command) {
+        command.attr = {
+          x: objects[0].x - objects[1].x,
+          y: objects[0].y - objects[1].y,
+        }
+        commands = [...commands, command]
+        this.app.updateState({ commands: commands })
+      }
     }
 
     this.app.update = true
