@@ -3,12 +3,13 @@ import Marker from './Marker'
 import Variable from './Variable'
 
 class Panel extends createjs.Shape {
-  constructor() {
+  constructor(app) {
     super()
 
+    this.app = app
     this.graphics.beginFill('#eee')
     this.graphics.drawRect(0, 0, 200, 800)
-    window.stage.addChild(this);
+    this.app.stage.addChild(this);
 
     this.count = 0
     this.object = null
@@ -18,7 +19,7 @@ class Panel extends createjs.Shape {
     let label = new createjs.Text(name, "18px Arial", "#000");
     label.x = 10
     label.y = 10 + 100 * this.count
-    window.stage.addChild(label);
+    this.app.stage.addChild(label);
 
     let box = new createjs.Shape()
     box.graphics.beginFill(color)
@@ -29,10 +30,10 @@ class Panel extends createjs.Shape {
     box.on('mousedown', (e) => {
       console.log('down')
       if (name === 'Marker') {
-        this.object = new Marker()
+        this.object = new Marker(this.app)
       }
       if (name === 'Variable') {
-        this.object = new Variable()
+        this.object = new Variable(this.app)
       }
     })
 
@@ -41,9 +42,9 @@ class Panel extends createjs.Shape {
         this.object.move()
       }
       if (name === 'Variable') {
-        this.object.x = window.stage.mouseX
-        this.object.y = window.stage.mouseY
-        window.update = true
+        this.object.x = this.app.stage.mouseX
+        this.object.y = this.app.stage.mouseY
+        this.app.update = true
       }
     })
 
@@ -51,7 +52,7 @@ class Panel extends createjs.Shape {
       console.log('up')
     })
 
-    window.stage.addChild(box)
+    this.app.stage.addChild(box)
     this.count++
   }
 }

@@ -1,21 +1,22 @@
 
 class Variable extends createjs.Shape {
-  constructor() {
+  constructor(app) {
     super()
 
+    this.app = app
     this.graphics.beginFill('#0f0')
     this.graphics.drawRect(-5, -5, 10, 10)
     this.line = new createjs.Shape()
-    stage.addChild(this.line)
+    this.app.stage.addChild(this.line)
 
     this.label = new createjs.Text("", "18px Arial", "#000");
-    stage.addChild(this.label)
+    this.app.stage.addChild(this.label)
 
     this.on('mousedown', this.onMouseDown)
     this.on('pressmove', this.onPressMove)
     this.on('pressup', this.onPressUp)
 
-    stage.addChild(this)
+    this.app.stage.addChild(this)
 
     this.linked = null
     this.object = null
@@ -27,18 +28,18 @@ class Variable extends createjs.Shape {
   }
 
   move() {
-    this.x = stage.mouseX
+    this.x = this.app.stage.mouseX
     this.object.select = true
 
-    let value = Math.floor(stage.mouseX * 4)
+    let value = Math.floor(this.app.stage.mouseX * 4)
     this.label.text = value
-    this.label.x = stage.mouseX / 2
-    this.label.y = stage.mouseY + 10
+    this.label.x = this.app.stage.mouseX / 2
+    this.label.y = this.app.stage.mouseY + 10
 
     this.object.move({ x: value, y: this.object.y })
     this.linked.text = 'id-' + this.id + ' = ' + value
 
-    window.update = true
+    this.app.update = true
   }
 
   onMouseDown(e) {
@@ -56,9 +57,9 @@ class Variable extends createjs.Shape {
     this.line.graphics.setStrokeStyle(3)
     this.line.graphics.beginStroke('green')
     this.line.graphics.moveTo(this.x, this.y)
-    this.line.graphics.lineTo(window.stage.mouseX, window.stage.mouseY)
+    this.line.graphics.lineTo(this.app.stage.mouseX, this.app.stage.mouseY)
     this.line.graphics.endStroke()
-    window.update = true
+    this.app.update = true
   }
 
   onPressUp(e) {
@@ -66,14 +67,14 @@ class Variable extends createjs.Shape {
 
     if (this.linked) {
       this.object.select = true
-      window.update = true
+      this.app.update = true
       return false
     }
 
-    for (let object of window.stage.children) {
+    for (let object of this.app.stage.children) {
       if (!object.labelX || !object.labelY) continue
 
-      let p = object.labelX.globalToLocal(window.stage.mouseX, window.stage.mouseY)
+      let p = object.labelX.globalToLocal(this.app.stage.mouseX, this.app.stage.mouseY)
       let hit = object.labelX.hitTest(p.x, p.y)
       if (hit) {
         object.labelX.text = 'id-' + this.id + ' = ' + object.labelX.text
@@ -83,7 +84,7 @@ class Variable extends createjs.Shape {
     }
 
     this.clear()
-    window.update = true
+    this.app.update = true
   }
 
 }

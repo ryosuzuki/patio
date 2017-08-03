@@ -1,8 +1,9 @@
 
 class Marker extends createjs.Shape {
-  constructor(stage) {
+  constructor(app) {
     super()
 
+    this.app = app
     this.select = false
 
     this.graphics.beginFill('#f00')
@@ -10,8 +11,8 @@ class Marker extends createjs.Shape {
 
     this.lineX = new createjs.Shape()
     this.lineY = new createjs.Shape()
-    window.stage.addChild(this.lineX)
-    window.stage.addChild(this.lineY)
+    this.app.stage.addChild(this.lineX)
+    this.app.stage.addChild(this.lineY)
 
     this.labelX = new createjs.Text("", "18px Arial", "#000")
     this.labelY = new createjs.Text("", "18px Arial", "#000")
@@ -22,19 +23,19 @@ class Marker extends createjs.Shape {
     this.labelX.hitArea = hit;
     this.labelY.hitArea = hit;
 
-    window.stage.addChild(this.labelX)
-    window.stage.addChild(this.labelY)
+    this.app.stage.addChild(this.labelX)
+    this.app.stage.addChild(this.labelY)
 
     this.circle = new createjs.Shape()
     this.circle.graphics.beginFill('#00f')
     this.circle.graphics.drawCircle(0, 0, 20)
-    window.stage.addChild(this.circle)
+    this.app.stage.addChild(this.circle)
 
     this.on('mousedown', this.onMouseDown)
     this.on('pressmove', this.onPressMove)
     this.on('pressup', this.onPressUp)
 
-    window.stage.addChild(this)
+    this.app.stage.addChild(this)
   }
 
   clear() {
@@ -46,7 +47,7 @@ class Marker extends createjs.Shape {
   }
 
   move(pos) {
-    if (!pos) pos = { x: window.stage.mouseX, y: window.stage.mouseY }
+    if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
     this.x = pos.x
     this.y = pos.y
 
@@ -78,7 +79,7 @@ class Marker extends createjs.Shape {
       this.labelY.y = pos.y / 2
     }
 
-    window.update = true
+    this.app.update = true
   }
 
   onMouseDown(e) {
@@ -87,7 +88,7 @@ class Marker extends createjs.Shape {
 
   onPressMove(e) {
     console.log('move')
-    for (let child of window.stage.children) {
+    for (let child of this.app.stage.children) {
       if (child.select) {
         child.select = false
         child.clear()
