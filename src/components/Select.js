@@ -1,6 +1,6 @@
 
 class Select extends createjs.Shape {
-  constructor(app) {
+  constructor() {
     super()
 
     this.app = app

@@ -1,4 +1,56 @@
+import React, { Component } from 'react'
+import Marker from './Marker'
 
+class Panel extends Component {
+  constructor() {
+    super()
+    this.state = {
+      items: ['Marker', 'Variable', 'Record']
+    }
+    this.app = app
+    window.panel = this
+  }
+
+  componentDidMount() {
+  }
+
+  onClick(item) {
+    console.log(item)
+    if (item === 'Marker') {
+      this.object = new Marker()
+      this.app.update = true
+    }
+  }
+
+  render() {
+    return (
+      <div id="panel">
+        <div className="ui feed">
+          { this.state.items.map((item) => {
+            return (
+              <div className={ "event" }  id={ item } key={ item } onClick={ this.onClick.bind(this, item) }>
+                <div className="content">
+                  <div className="summary">
+                    { item }
+                  </div>
+                  <div className="text">
+                    Hello world
+                  </div>
+                </div>
+              </div>
+            )
+          }) }
+        </div>
+      </div>
+    )
+  }
+
+}
+
+export default Panel
+
+
+/*
 import Marker from './Marker'
 import Variable from './Variable'
 
@@ -66,3 +118,4 @@ class Panel extends createjs.Shape {
 
 export default Panel
 
+*/

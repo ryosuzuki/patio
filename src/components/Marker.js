@@ -1,7 +1,7 @@
 
 
 class Marker extends createjs.Shape {
-  constructor(app) {
+  constructor() {
     super()
 
     this.app = app
@@ -18,6 +18,9 @@ class Marker extends createjs.Shape {
 
     this.app.stage.addChild(this.circle)
     this.app.stage.addChild(this)
+
+    this.x = 100
+    this.y = 100
   }
 
   clear() {
