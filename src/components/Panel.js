@@ -6,7 +6,6 @@ class Panel extends Component {
     super()
     this.state = {
       items: ['Marker', 'Variable', 'Record'],
-      commands: []
     }
     this.app = app
     window.panel = this
@@ -29,12 +28,12 @@ class Panel extends Component {
         object.record()
 
         let command = {
-          id: this.state.commands.length+1,
+          id: this.props.commands.length+1,
           object: object,
           type: 'MOVE',
           attr: { x: 100, y: 0 }
         }
-        this.setState({ commands: [command] })
+        this.app.updateState({ commands: [command] })
       }
     }
   }
@@ -61,7 +60,7 @@ class Panel extends Component {
 
         <div className="ui feed">
           <h4 className="ui header">Program</h4>
-          { this.state.commands.map((command) => {
+          { this.props.commands.map((command) => {
             return (
               <div className={ "event" }  id={ command.id } key={ command.id }>
                 <div className="content">

@@ -30,10 +30,18 @@ class App extends Component {
     }
   }
 
+  updateState(state) {
+    // debugger
+    this.props.store.dispatch(actions.updateState(state))
+    // this.props.store.dispatch(actions.updateState(Object.assign(this.props.state, state)))
+  }
+
   render() {
     return (
       <div>
-        <Panel />
+        <Panel
+          commands={ this.props.commands }
+        />
         <canvas ref="canvas" id="canvas" width="1000" height="800"></canvas>
       </div>
     )
@@ -51,29 +59,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
-
-/*
-<Sidebar />
-<Mode
-  mode={ this.props.mode }
-  path={ this.props.path }
-  store={ this.props.store }
-/>
-<Canvas
-  mode={ this.props.mode }
-  drawing={ this.props.drawing }
-  active={ this.props.active }
-  point={ this.props.point }
-  start={ this.props.start }
-  path={ this.props.path }
-  offsetX={ this.props.offsetX }
-  offsetY={ this.props.offsetY }
-  store={ this.props.store }
-/>
-<Panel
-  active={ this.props.active }
-  path={ this.props.path }
-  store={ this.props.store }
-/>
-
-*/

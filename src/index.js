@@ -11,14 +11,7 @@ import configureStore from './redux/store'
 import { Provider } from 'react-redux'
 
 let initialStore = {
-  mode: null,
-  drawing: false,
-  active: null,
-  point: null,
-  start: null,
-  path: null,
-  offsetX: 0,
-  offsetY: 0,
+  commands: []
 }
 
 let store = configureStore(initialStore)
