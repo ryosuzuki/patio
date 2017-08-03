@@ -10,7 +10,7 @@ panel.graphics.beginFill('#eee')
 panel.graphics.drawRect(0, 0, 100, 400)
 stage.addChild(panel);
 
-let label = new createjs.Text("Value", "18px Arial", "#000");
+let label = new createjs.Text("Marker", "18px Arial", "#000");
 label.x = 10
 label.y = 10
 stage.addChild(label);
@@ -28,15 +28,14 @@ box.on('mousedown', (e) => {
 })
 
 box.on('pressmove', (e) => {
-  marker.x = e.stageX
-  marker.y = e.stageY
-  update = true
+  marker.move(e)
 })
 
 let line
 box.on('pressup', (e) => {
   console.log('up')
 
+  /*
   line = new createjs.Shape()
   line.graphics.setStrokeStyle(3)
   line.graphics.beginStroke('#000')
@@ -63,12 +62,10 @@ box.on('pressup', (e) => {
   marker.start = e.stageX - 100
 
   update = true
-
+  */
 })
 
 stage.addChild(box);
-
-
 
 
 const addMarker = () => {
@@ -76,9 +73,36 @@ const addMarker = () => {
   marker.graphics.beginFill('#f00')
   marker.graphics.drawRect(-5, -5, 10, 10)
 
+  marker.lineX = new createjs.Shape()
+  stage.addChild(marker.lineX);
+
+  marker.lineY = new createjs.Shape()
+  stage.addChild(marker.lineY);
+
+  marker.move = (e) => {
+    marker.x = e.stageX
+    marker.y = e.stageY
+
+    marker.lineX.graphics.clear()
+    marker.lineX.graphics.setStrokeStyle(3)
+    marker.lineX.graphics.beginStroke('#aaa')
+    marker.lineX.graphics.moveTo(0, e.stageY)
+    marker.lineX.graphics.lineTo(e.stageX, e.stageY)
+    marker.lineX.graphics.endStroke()
+
+    marker.lineY.graphics.clear()
+    marker.lineY.graphics.setStrokeStyle(3)
+    marker.lineY.graphics.beginStroke('#aaa')
+    marker.lineY.graphics.moveTo(e.stageX, 0)
+    marker.lineY.graphics.lineTo(e.stageX, e.stageY)
+    marker.lineY.graphics.endStroke()
+
+
+    update = true
+  }
+
   marker.on('mousedown', (e) => {
     console.log('down')
-
   })
 
   marker.on('pressmove', (e) => {
