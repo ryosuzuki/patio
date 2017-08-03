@@ -5,7 +5,8 @@ class Panel extends Component {
   constructor() {
     super()
     this.state = {
-      items: ['Marker', 'Variable', 'Record']
+      items: ['Marker', 'Variable', 'Record'],
+      commands: []
     }
     this.app = app
     window.panel = this
@@ -20,12 +21,29 @@ class Panel extends Component {
       this.object = new Marker()
       this.app.update = true
     }
+
+    if (item === 'Record') {
+      let objects = this.app.stage.children.filter(object => object.isSelect)
+      if (objects.length > 0) {
+        let object = objects[0]
+        object.record()
+
+        let command = {
+          id: this.state.commands.length+1,
+          object: object,
+          type: 'MOVE',
+          attr: { x: 100, y: 0 }
+        }
+        this.setState({ commands: [command] })
+      }
+    }
   }
 
   render() {
     return (
       <div id="panel">
         <div className="ui feed">
+          <h4 className="ui header">Command</h4>
           { this.state.items.map((item) => {
             return (
               <div className={ "event" }  id={ item } key={ item } onClick={ this.onClick.bind(this, item) }>
@@ -34,13 +52,30 @@ class Panel extends Component {
                     { item }
                   </div>
                   <div className="text">
-                    Hello world
                   </div>
                 </div>
               </div>
             )
           }) }
         </div>
+
+        <div className="ui feed">
+          <h4 className="ui header">Program</h4>
+          { this.state.commands.map((command) => {
+            return (
+              <div className={ "event" }  id={ command.id } key={ command.id }>
+                <div className="content">
+                  <div className="summary">
+                    { `${command.type} ${JSON.stringify(command.attr)}` }
+                  </div>
+                  <div className="text">
+                  </div>
+                </div>
+              </div>
+            )
+          }) }
+        </div>
+
       </div>
     )
   }

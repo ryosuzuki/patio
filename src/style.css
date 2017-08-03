@@ -79,6 +79,13 @@
   text-align: center;
 }
 
+#panel .header {
+  margin: 0;
+  padding: 10px 20px !important;
+  background: #eaeaea;
+}
+
+
 #panel .event:hover {
   background-color: #efefef !important;
 }
