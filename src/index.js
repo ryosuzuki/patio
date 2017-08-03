@@ -77,6 +77,7 @@ const addVariable = () => {
 
   variable.move = (e) => {
     variable.x = e.stageX
+    marker.select = true
 
     let value = Math.floor(e.stageX * 4)
     variable.label.text = value
@@ -113,6 +114,9 @@ const addVariable = () => {
     console.log('pressup')
 
     if (variable.linked) {
+      marker.select = true
+      update = true
+
       return false
     }
     let p = marker.labelX.globalToLocal(stage.mouseX, stage.mouseY)
