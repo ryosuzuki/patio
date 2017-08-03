@@ -5,7 +5,8 @@ class Marker extends createjs.Shape {
     super()
 
     this.app = app
-    this.select = false
+    this.isSelect = false
+    this.isRecord = false
 
     this.graphics.beginFill('#f00')
     this.graphics.drawRect(-5, -5, 10, 10)
@@ -19,11 +20,56 @@ class Marker extends createjs.Shape {
     this.app.stage.addChild(this)
   }
 
+  clear() {
+    this.circle.graphics.clear()
+  }
+
   move(pos) {
+    this.clear()
     if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
     this.x = pos.x
     this.y = pos.y
+    if (this.isSelect || this.isRecord) {
+      this.circle.graphics.beginFill('#00f')
+      this.circle.graphics.drawCircle(0, 0, 20)
+      this.circle.x = this.x
+      this.circle.y = this.y
+    }
+    this.app.update = true
+  }
 
+  record() {
+    console.log('record')
+    this.app.select.clear()
+
+    this.original = new createjs.Shape()
+    this.original.graphics.beginFill('#f00')
+    this.original.graphics.drawRect(-5, -5, 10, 10)
+    this.original.circle = new createjs.Shape()
+    this.original.circle.graphics.beginFill('#00f')
+    this.original.circle.graphics.drawCircle(0, 0, 20)
+
+    this.original.x = this.x
+    this.original.y = this.y
+    this.original.circle.x = this.x
+    this.original.circle.y = this.y
+
+    this.original.alpha = 0.3
+    this.original.circle.alpha = 0.3
+
+    this.app.stage.addChild(this.original.circle)
+    this.app.stage.addChild(this.original)
+
+    this.x = this.x + 100
+    this.circle.x = this.x
+    this.circle.graphics.beginFill('#00f')
+    this.circle.graphics.drawCircle(0, 0, 20)
+
+    this.isRecord = true
+    this.isSelect = true
+    this.original.isSelect = true
+
+    this.app.select.show()
     this.app.update = true
   }
 
@@ -33,17 +79,25 @@ class Marker extends createjs.Shape {
 
   onPressMove(e) {
     console.log('move')
-    this.select = true
-    this.move()
-    this.app.select.move()
+    if (this.isRecord) {
+      this.move()
+      this.app.select.show()
+    } else {
+      this.isSelect = true
+      this.move()
+      this.app.select.show()
+    }
   }
 
   onPressUp(e) {
     console.log('pressup')
+    if (this.isRecord) {
 
-    this.select = !this.select
-    this.move()
-    this.app.select.move()
+    } else {
+      this.isSelect = !this.isSelect
+      this.move()
+      this.app.select.show()
+    }
   }
 }
 

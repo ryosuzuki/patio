@@ -17,11 +17,6 @@ class Select extends createjs.Shape {
   }
 
   clear() {
-    for (let object of this.app.stage.children) {
-      if (!object.circle) continue
-      object.circle.graphics.clear()
-    }
-
     for (let i = 0; i < 2; i++) {
       this.lines[i].graphics.clear()
       this.labels[i].text = ''
@@ -30,24 +25,11 @@ class Select extends createjs.Shape {
     this.app.update = true
   }
 
-  move(pos) {
-    if (!pos) {
-      pos = {
-        x: this.app.stage.mouseX,
-        y: this.app.stage.mouseY
-      }
-    }
-
+  show(pos) {
     this.clear()
+    if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
 
-    let objects = this.app.stage.children.filter(object => object.select)
-
-    for (let object of objects) {
-      object.circle.graphics.beginFill('#00f')
-      object.circle.graphics.drawCircle(0, 0, 20)
-      object.circle.x = object.x
-      object.circle.y = object.y
-    }
+    let objects = this.app.stage.children.filter(object => object.isSelect)
 
     if (objects.length === 1) {
       for (let i = 0; i < 2; i++) {

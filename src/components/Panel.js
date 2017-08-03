@@ -35,6 +35,13 @@ class Panel extends createjs.Shape {
       if (name === 'Variable') {
         this.object = new Variable(this.app)
       }
+      if (name === 'Record') {
+        let objects = this.app.stage.children.filter(object => object.isSelect)
+        if (objects.length > 0) {
+          objects[0].record()
+        }
+      }
+
     })
 
     box.on('pressmove', (e) => {

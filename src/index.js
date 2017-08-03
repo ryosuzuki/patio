@@ -14,7 +14,6 @@ class App {
     createjs.Touch.enable(this.stage)
     createjs.Ticker.addEventListener('tick', tick);
 
-    this.select = new Select(this)
   }
 }
 
@@ -24,6 +23,9 @@ window.app = app
 let panel = new Panel(app)
 panel.add('Marker', '#f00')
 panel.add('Variable', '#0f0')
+panel.add('Record', '#00f')
+
+app.select = new Select(app)
 
 
 function tick(event) {
