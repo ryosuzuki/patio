@@ -85,6 +85,9 @@
   background: #eaeaea;
 }
 
+#panel .slider-wrapper {
+  margin: 20px;
+}
 
 #panel .event:hover {
   background-color: #efefef !important;

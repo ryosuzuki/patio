@@ -20,11 +20,13 @@ class Marker extends createjs.Shape {
 
     this.x = 100
     this.y = 100
+
+    window.marker = this
   }
 
   clear() {
     this.circle.graphics.clear()
-    if (this.original) {
+    if (!this.isRecord && this.original) {
       this.original.graphics.clear()
       this.original.circle.graphics.clear()
     }
@@ -38,7 +40,26 @@ class Marker extends createjs.Shape {
     this.circle.y = this.y
   }
 
-  move(pos) {
+  locate(pos) {
+    this.graphics.beginFill('#f00')
+    this.graphics.drawRect(-5, -5, 10, 10)
+    this.x = pos.x
+    this.y = pos.y
+    this.app.update = true
+  }
+
+  move(start, end) {
+    this.x = start.x
+    this.y = start.y
+    this.update = true
+    for (let i = 1; i <= 10; i++) {
+      this.x = (end.x - start.x) / 10 * i + start.x
+      this.y = (end.y - start.y) / 10 * i + start.y
+      this.update = true
+    }
+  }
+
+  drag(pos) {
     this.clear()
     if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
     this.x = pos.x
@@ -50,9 +71,17 @@ class Marker extends createjs.Shape {
     let commands = this.app.props.commands
     let command = commands.pop()
     if (command) {
-      command.attr = {
-        x: this.x,
-        y: this.y,
+      if (command.type === 'LOCATE') {
+        command.attr = {
+          x: this.x,
+          y: this.y,
+        }
+      }
+      if (command.type === 'MOVE') {
+        command.attr = {
+          x: this.x - this.original.x,
+          y: this.y - this.original.y,
+        }
       }
       commands = [...commands, command]
       this.app.updateState({ commands: commands })
@@ -103,11 +132,11 @@ class Marker extends createjs.Shape {
   onPressMove(e) {
     console.log('move')
     if (this.isRecord) {
-      this.move()
+      this.drag()
       this.app.select.show()
     } else {
       this.isSelect = true
-      this.move()
+      this.drag()
       this.app.select.show()
     }
   }
@@ -118,7 +147,7 @@ class Marker extends createjs.Shape {
 
     } else {
       this.isSelect = !this.isSelect
-      this.move()
+      this.drag()
       this.app.select.show()
     }
   }
