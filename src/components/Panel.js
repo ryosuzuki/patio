@@ -1,18 +1,15 @@
 import React, { Component } from 'react'
-import Slider from 'rc-slider'
-import _ from 'lodash'
-import Tooltip from 'rc-tooltip'
 
+import Trace from './Trace'
 import Marker from './Marker'
 
 class Panel extends Component {
   constructor() {
     super()
     this.state = {
-      items: ['Locate', 'Move', 'Variable']
+      items: ['Locate', 'Move', 'Variable', 'Loop']
     }
     this.app = app
-    window._ = _
     window.panel = this
   }
 
@@ -22,12 +19,7 @@ class Panel extends Component {
   onClick(item) {
     console.log(item)
     let type = item.toUpperCase()
-    this.app.command.add(type)
-  }
-
-  onChange(step) {
-    this.app.updateState({ step: step })
-    this.app.execute(step)
+    window.trace.add(type)
   }
 
   render() {
@@ -49,36 +41,10 @@ class Panel extends Component {
             )
           }) }
         </div>
-
-        <div className="ui feed">
-          <h4 className="ui header">Program</h4>
-          { this.props.commands.map((command, i) => {
-            return (
-              <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i)}>
-                <div className="content">
-                  <div className="summary">
-                  </div>
-                  <div className="text">
-                    <b>{ command.type }</b>&nbsp;
-                    <span>{ JSON.stringify(command.attr) }</span>
-                  </div>
-                </div>
-              </div>
-            )
-          }) }
-        </div>
-
-        <div className="slider-wrapper">
-          <Slider
-            dots
-            min={ 0 }
-            max={ this.props.commands.length-1 }
-            value={ this.props.step }
-            onChange={ this.onChange.bind(this) }
-            handle={ handle }
-          />
-        </div>
-
+        <Trace
+          commands={ this.props.commands }
+          step={ this.props.step }
+        />
       </div>
     )
   }
@@ -86,18 +52,3 @@ class Panel extends Component {
 }
 
 export default Panel
-
-const Handle = Slider.Handle;
-const handle = (props) => {
-  const { value, dragging, index, ...restProps } = props;
-  return (
-    <Tooltip
-      overlay={value}
-      visible={dragging}
-      placement="top"
-      key={index}
-    >
-      <Handle {...restProps} />
-    </Tooltip>
-  );
-};

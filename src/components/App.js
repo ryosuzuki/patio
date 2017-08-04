@@ -5,7 +5,7 @@ import actions from '../redux/actions'
 import 'yuki-createjs'
 
 import Panel from './Panel'
-import Command from './Command'
+import Trace from './Trace'
 import Marker from './Marker'
 
 class App extends Component {
@@ -21,14 +21,12 @@ class App extends Component {
     this.stage.enableMouseOver(10)
     createjs.Touch.enable(this.stage)
     createjs.Ticker.on('tick', this.tick.bind(this))
-
-    this.command = new Command()
   }
 
   execute(step) {
     console.log(step)
     let commands = this.props.commands
-    this.command.calculate(commands, step)
+    window.trace.calculate(commands, step)
     this.update = true
   }
 

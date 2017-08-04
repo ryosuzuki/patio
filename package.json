@@ -48,6 +48,7 @@
     "react-number-editor": "^4.0.2",
     "react-redux": "^5.0.2",
     "react-simplemde-editor": "^3.6.8",
+    "react-sortable-hoc": "^0.6.6",
     "redux": "^3.6.0",
     "redux-logger": "^2.8.1",
     "redux-thunk": "^2.2.0",

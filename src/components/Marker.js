@@ -66,7 +66,7 @@ class Marker extends createjs.Shape {
   drag(pos) {
     this.x = this.app.stage.mouseX
     this.y = this.app.stage.mouseY
-    this.app.command.calculate()
+    window.trace.calculate()
   }
 
   onMouseDown(e) {
