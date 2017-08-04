@@ -11,7 +11,8 @@ import configureStore from './redux/store'
 import { Provider } from 'react-redux'
 
 let initialStore = {
-  commands: []
+  commands: [],
+  step: 0
 }
 
 let store = configureStore(initialStore)

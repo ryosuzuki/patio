@@ -46,9 +46,9 @@ class App extends Component {
           y: command.attr.y
         }
 
-        if (i === step-1) {
+        // if (i === step-1) {
           object.locate(command.attr)
-        }
+        // }
       }
 
       if (command.type === 'MOVE') {
@@ -67,7 +67,10 @@ class App extends Component {
           .get(object)
           .to(start, 0)
           .to(end, 500)
-          .call(() => { this.animate = false })
+          .call(() => {
+            this.animate = false
+            object.locate(end)
+          })
         }
       }
     }
@@ -91,6 +94,7 @@ class App extends Component {
       <div>
         <Panel
           commands={ this.props.commands }
+          step={ this.props.step }
         />
         <canvas ref="canvas" id="canvas" width="1000" height="800"></canvas>
       </div>

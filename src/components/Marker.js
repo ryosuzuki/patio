@@ -68,8 +68,9 @@ class Marker extends createjs.Shape {
       this.show()
     }
 
-    let commands = this.app.props.commands
-    let command = commands.pop()
+    let commands = _.clone(this.app.props.commands)
+    let step = this.app.props.step
+    let command = commands[step-1]
     if (command) {
       if (command.type === 'LOCATE') {
         command.attr = {
@@ -83,7 +84,7 @@ class Marker extends createjs.Shape {
           y: this.y - this.original.y,
         }
       }
-      commands = [...commands, command]
+      commands[step-1] = command
       this.app.updateState({ commands: commands })
     }
 

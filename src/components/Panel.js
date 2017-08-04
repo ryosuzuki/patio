@@ -8,8 +8,7 @@ class Panel extends Component {
   constructor() {
     super()
     this.state = {
-      items: ['Locate', 'Variable', 'Move'],
-      step: 0
+      items: ['Locate', 'Variable', 'Move']
     }
     this.app = app
     window._ = _
@@ -21,12 +20,15 @@ class Panel extends Component {
 
   onClick(item) {
     console.log(item)
+    let step = this.props.step
+    step = step + 1
+    this.app.updateState({ step: step })
     if (item === 'Locate') {
       let object = new Marker()
 
       let commands = this.props.commands
       let command = {
-        id: this.props.commands.length+1,
+        id: step,
         object: object,
         type: 'LOCATE',
         attr: { x: 100, y: 100 }
@@ -43,7 +45,7 @@ class Panel extends Component {
         let object = objects[0]
         let commands = this.props.commands
         let command = {
-          id: this.props.commands.length+1,
+          id: step,
           object: object,
           type: 'MOVE',
           attr: { x: 100, y: 0 }
@@ -57,7 +59,7 @@ class Panel extends Component {
   }
 
   onChange(step) {
-    this.setState({ step: step })
+    this.app.updateState({ step: step })
     this.app.execute(step)
   }
 
@@ -83,9 +85,9 @@ class Panel extends Component {
 
         <div className="ui feed">
           <h4 className="ui header">Program</h4>
-          { this.props.commands.map((command) => {
+          { this.props.commands.map((command, i) => {
             return (
-              <div className={ "event" }  id={ command.id } key={ command.id }>
+              <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i+1)}>
                 <div className="content">
                   <div className="summary">
                     { `${command.type} ${JSON.stringify(command.attr)}` }
@@ -103,7 +105,7 @@ class Panel extends Component {
             dots
             min={ 0 }
             max={ this.props.commands.length }
-            value={ this.state.step }
+            value={ this.props.step }
             onChange={ this.onChange.bind(this) }
             handle={ handle }
           />
