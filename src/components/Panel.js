@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Slider from 'rc-slider'
 import _ from 'lodash'
 import Tooltip from 'rc-tooltip'
+
 import Marker from './Marker'
 
 class Panel extends Component {
@@ -20,25 +21,9 @@ class Panel extends Component {
 
   onClick(item) {
     console.log(item)
-    let step = this.props.step
-    step = step + 1
-    this.app.updateState({ step: step })
-    if (item === 'Locate') {
-      let object = new Marker()
-
-      let commands = this.props.commands
-      let command = {
-        id: step,
-        object: object,
-        type: 'LOCATE',
-        attr: { x: 100, y: 100 }
-      }
-      commands = [...commands, command]
-      this.app.updateState({ commands: commands })
-
-      this.app.update = true
-    }
-
+    let type = item.toUpperCase()
+    this.app.command.add(type)
+    /*
     if (item === 'Move') {
       let objects = this.app.stage.children.filter(object => object.isSelect)
       if (objects.length > 0) {
@@ -55,7 +40,9 @@ class Panel extends Component {
 
         object.record()
       }
+
     }
+    */
   }
 
   onChange(step) {

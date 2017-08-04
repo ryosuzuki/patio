@@ -18,9 +18,6 @@ class Marker extends createjs.Shape {
     this.app.stage.addChild(this.circle)
     this.app.stage.addChild(this)
 
-    this.x = 100
-    this.y = 100
-
     window.marker = this
   }
 
@@ -33,11 +30,16 @@ class Marker extends createjs.Shape {
     this.app.update = true
   }
 
-  show() {
+  show(pos) {
+    this.graphics.beginFill('#f00')
+    this.graphics.drawRect(-5, -5, 10, 10)
+    this.x = pos.x
+    this.y = pos.y
     this.circle.graphics.beginFill('#00f')
     this.circle.graphics.drawCircle(0, 0, 20)
     this.circle.x = this.x
     this.circle.y = this.y
+    this.app.update = true
   }
 
   locate(pos) {
@@ -48,46 +50,12 @@ class Marker extends createjs.Shape {
     this.app.update = true
   }
 
-  move(start, end) {
-    this.x = start.x
-    this.y = start.y
-    this.update = true
-    for (let i = 1; i <= 10; i++) {
-      this.x = (end.x - start.x) / 10 * i + start.x
-      this.y = (end.y - start.y) / 10 * i + start.y
-      this.update = true
-    }
-  }
-
   drag(pos) {
     this.clear()
     if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
     this.x = pos.x
     this.y = pos.y
-    if (this.isSelect || this.isRecord) {
-      this.show()
-    }
-
-    let commands = _.clone(this.app.props.commands)
-    let step = this.app.props.step
-    let command = commands[step-1]
-    if (command) {
-      if (command.type === 'LOCATE') {
-        command.attr = {
-          x: this.x,
-          y: this.y,
-        }
-      }
-      if (command.type === 'MOVE') {
-        command.attr = {
-          x: this.x - this.original.x,
-          y: this.y - this.original.y,
-        }
-      }
-      commands[step-1] = command
-      this.app.updateState({ commands: commands })
-    }
-
+    this.app.command.update(pos)
     this.app.update = true
   }
 

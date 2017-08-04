@@ -6,6 +6,7 @@ import 'yuki-createjs'
 
 import Panel from './Panel'
 import Select from './Select'
+import Command from './Command'
 import Marker from './Marker'
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
     createjs.Touch.enable(this.stage)
     createjs.Ticker.on('tick', this.tick.bind(this))
 
+    this.command = new Command()
     this.select = new Select()
   }
 
@@ -36,44 +38,7 @@ class App extends Component {
 
     console.log(step)
     if (step < 1) return false
-    let objects = {}
-    for (let i = 0; i < step; i++) {
-      let command = this.props.commands[i]
-      if (command.type === 'LOCATE') {
-        let object = command.object
-        objects[object.id] = {
-          x: command.attr.x,
-          y: command.attr.y
-        }
-
-        // if (i === step-1) {
-          object.locate(command.attr)
-        // }
-      }
-
-      if (command.type === 'MOVE') {
-        let object = command.object
-        let start = objects[object.id]
-        let end = {
-          x: start.x + command.attr.x,
-          y: start.y + command.attr.y,
-        }
-        objects[object.id] = end
-
-        if (i === step-1) {
-          this.animate = true
-          object.locate(start)
-          createjs.Tween
-          .get(object)
-          .to(start, 0)
-          .to(end, 500)
-          .call(() => {
-            this.animate = false
-            object.locate(end)
-          })
-        }
-      }
-    }
+    this.props.commands[step].execute()
     this.update = true
   }
 
