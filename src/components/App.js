@@ -5,7 +5,6 @@ import actions from '../redux/actions'
 import 'yuki-createjs'
 
 import Panel from './Panel'
-import Select from './Select'
 import Command from './Command'
 import Marker from './Marker'
 
@@ -24,20 +23,10 @@ class App extends Component {
     createjs.Ticker.on('tick', this.tick.bind(this))
 
     this.command = new Command()
-    this.select = new Select()
   }
 
   execute(step) {
-    this.stage.children.map((object) => {
-      if (object.isSelect) object.isSelect = false
-      if (object.isRecord) object.isRecord = false
-      if (object.graphics) object.graphics.clear()
-      if (object.text) object.text = ''
-    })
-    this.update = true
-
     console.log(step)
-    if (step < 0) return false
     let commands = this.props.commands
     this.command.calculate(commands, step)
     this.update = true

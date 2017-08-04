@@ -1,5 +1,6 @@
 
 import Marker from './Marker'
+import Select from './Select'
 
 class Command {
   constructor() {
@@ -10,12 +11,14 @@ class Command {
     let step = this.app.props.step + 1
     let commands = this.app.props.commands
     let object = new Marker()
+    let select = new Select()
     object.x = 100
     object.y = 100
     let command = {
       id: step,
       type: type,
       object: object,
+      select: select,
       attr: { x: 100, y: 100 },
     }
     commands = [...commands, command]
@@ -28,6 +31,7 @@ class Command {
     for (let i = 0; i < commands.length; i++) {
       let command = commands[i]
       let object = command.object
+      let select = command.select
       let prev = i > 0 ? commands[i-1].object : { x: 0, y: 0 }
       if (i <= step) {
         command.attr = {
@@ -45,25 +49,10 @@ class Command {
       } else {
         object.show(false)
       }
-      this.app.select.show(object, prev)
+      select.show(object, prev)
     }
 
     this.app.updateState({ commands: commands, step: step })
-  }
-
-  show(commands, step) {
-    let command = commands[step]
-    let object = command.object
-    let prev = commands[step-1]
-    if (prev) {
-      if (command.type === 'LOCATE') {
-        prev.object.show(prev.pos)
-      }
-      if (command.type === 'MOVE') {
-        object.showOriginal(prev.pos)
-      }
-    }
-    object.show(command.pos)
   }
 
   execute() {

@@ -9,7 +9,7 @@ class Panel extends Component {
   constructor() {
     super()
     this.state = {
-      items: ['Locate', 'Variable', 'Move']
+      items: ['Locate', 'Move', 'Variable']
     }
     this.app = app
     window._ = _
@@ -57,10 +57,10 @@ class Panel extends Component {
               <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i)}>
                 <div className="content">
                   <div className="summary">
-                    { command.type }
                   </div>
                   <div className="text">
-                    { JSON.stringify(command.attr) }
+                    <b>{ command.type }</b>&nbsp;
+                    <span>{ JSON.stringify(command.attr) }</span>
                   </div>
                 </div>
               </div>
