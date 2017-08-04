@@ -53,10 +53,7 @@ class Marker extends createjs.Shape {
   drag(pos) {
     this.clear()
     if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
-    this.x = pos.x
-    this.y = pos.y
     this.app.command.update(pos)
-    this.app.update = true
   }
 
   record() {
@@ -100,6 +97,8 @@ class Marker extends createjs.Shape {
 
   onPressMove(e) {
     console.log('move')
+    this.drag()
+    /*
     if (this.isRecord) {
       this.drag()
       this.app.select.show()
@@ -108,16 +107,21 @@ class Marker extends createjs.Shape {
       this.drag()
       this.app.select.show()
     }
+    */
   }
 
   onPressUp(e) {
     console.log('pressup')
+    this.drag()
+
     if (this.isRecord) {
 
     } else {
+      /*
       this.isSelect = !this.isSelect
       this.drag()
       this.app.select.show()
+      */
     }
   }
 }

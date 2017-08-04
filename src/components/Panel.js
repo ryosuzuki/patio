@@ -74,7 +74,7 @@ class Panel extends Component {
           <h4 className="ui header">Program</h4>
           { this.props.commands.map((command, i) => {
             return (
-              <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i+1)}>
+              <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i)}>
                 <div className="content">
                   <div className="summary">
                     { `${command.type} ${JSON.stringify(command.attr)}` }
@@ -91,7 +91,7 @@ class Panel extends Component {
           <Slider
             dots
             min={ 0 }
-            max={ this.props.commands.length }
+            max={ this.props.commands.length-1 }
             value={ this.props.step }
             onChange={ this.onChange.bind(this) }
             handle={ handle }

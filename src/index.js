@@ -12,7 +12,7 @@ import { Provider } from 'react-redux'
 
 let initialStore = {
   commands: [],
-  step: 0
+  step: -1
 }
 
 let store = configureStore(initialStore)

@@ -8,7 +8,7 @@ class Command {
   }
 
   add(type) {
-    let step = this.app.props.step
+    let step = this.app.props.step + 1
     let commands = this.app.props.commands
     let object
     if (type === 'LOCATE') {
@@ -21,54 +21,51 @@ class Command {
       id: step,
       type: type,
       object: object,
-      attr: { x: 100, y: 0 },
-      pos: {},
+      attr: { x: 100, y: 100 },
+      pos: { x: 100, y: 100 },
     }
     commands = [...commands, command]
-    this.app.updateState({ step: step + 1 })
-    this.calculate(commands)
+    this.calculate(commands, step)
   }
 
-  show() {
-    let command = this.app.props.commands[i]
-    let object = command.object
-    let prev = this.app.props.commands[i-1]
-    let origin = prev ? prev.object : null
-
-    origin.show(prev.pos)
-    object.show(object.pos)
-  }
-
-  calculate(commands) {
+  calculate(commands, step) {
+    if (step === undefined) step = this.app.props.step
     if (!commands) commands = _.clone(this.app.props.commands)
     for (let i = 0; i < commands.length; i++) {
       let command = commands[i]
       let prev = commands[i-1]
-
       let origin = prev
         ? prev.pos
         : { x: 0, y: 0 }
-      command.pos = {
-        x: origin.x + command.attr.x,
-        y: origin.y + command.attr.y
+      command.attr = {
+        x: Math.floor(command.pos.x - origin.x),
+        y: Math.floor(command.pos.y - origin.y)
       }
       commands[i] = command
     }
-    console.log(commands)
-    this.app.updateState({ commands: commands })
+
+    this.show(commands, step)
+    this.app.updateState({ commands: commands, step: step })
+  }
+
+  show(commands, step) {
+    let command = commands[step]
+    let object = command.object
+    let prev = commands[step-1]
+    if (prev) {
+      prev.object.show(prev.pos)
+    }
+    object.show(command.pos)
+    this.app.select.show(command, prev)
   }
 
   update(pos) {
     let step = this.app.props.step
-    let commands = this.app.props.commands
-    let command = _.clone(commands[step])
-    command.attr = {
-      x: pos.x,
-      y: pos.y
-    }
+    let commands = _.clone(this.app.props.commands)
+    let command = commands[step]
+    command.pos = pos
     commands[step] = command
-    this.calculate()
-    this.show()
+    this.calculate(commands)
   }
 
   execute() {

@@ -37,8 +37,9 @@ class App extends Component {
     this.update = true
 
     console.log(step)
-    if (step < 1) return false
-    this.props.commands[step].execute()
+    if (step < 0) return false
+    let commands = this.props.commands
+    this.command.calculate(commands, step)
     this.update = true
   }
 
@@ -49,7 +50,7 @@ class App extends Component {
     }
   }
 
-  updateState(state) {
+  updateState(state, callback) {
     this.props.store.dispatch(actions.updateState(state))
     // this.props.store.dispatch(actions.updateState(Object.assign(this.props.state, state)))
   }
