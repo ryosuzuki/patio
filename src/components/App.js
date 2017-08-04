@@ -62,7 +62,7 @@ class App extends Component {
           commands={ this.props.commands }
           step={ this.props.step }
         />
-        <canvas ref="canvas" id="canvas" width="1000" height="800"></canvas>
+        <canvas ref="canvas" id="canvas" width="1000" height="600"></canvas>
       </div>
     )
   }

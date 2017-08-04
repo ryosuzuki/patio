@@ -1,7 +1,6 @@
 
 import Marker from './Marker'
 
-
 class Command {
   constructor() {
     this.app = app
@@ -28,18 +27,32 @@ class Command {
     this.calculate(commands, step)
   }
 
+  update(pos) {
+    let step = this.app.props.step
+    let commands = _.clone(this.app.props.commands)
+    let command = commands[step]
+    command.pos = pos
+    commands[step] = command
+    this.calculate(commands)
+  }
+
   calculate(commands, step) {
     if (step === undefined) step = this.app.props.step
     if (!commands) commands = _.clone(this.app.props.commands)
     for (let i = 0; i < commands.length; i++) {
       let command = commands[i]
       let prev = commands[i-1]
-      let origin = prev
-        ? prev.pos
-        : { x: 0, y: 0 }
-      command.attr = {
-        x: Math.floor(command.pos.x - origin.x),
-        y: Math.floor(command.pos.y - origin.y)
+      if (!prev) prev = { pos: { x: 0, y: 0 } }
+      if (i <= step) {
+        command.attr = {
+          x: Math.floor(command.pos.x - prev.pos.x),
+          y: Math.floor(command.pos.y - prev.pos.y)
+        }
+      } else {
+        command.pos = {
+          x: Math.floor(prev.pos.x + command.attr.x),
+          y: Math.floor(prev.pos.y + command.attr.y)
+        }
       }
       commands[i] = command
     }
@@ -53,19 +66,15 @@ class Command {
     let object = command.object
     let prev = commands[step-1]
     if (prev) {
-      prev.object.show(prev.pos)
+      if (command.type === 'LOCATE') {
+        prev.object.show(prev.pos)
+      }
+      if (command.type === 'MOVE') {
+        object.showOriginal(prev.pos)
+      }
     }
     object.show(command.pos)
     this.app.select.show(command, prev)
-  }
-
-  update(pos) {
-    let step = this.app.props.step
-    let commands = _.clone(this.app.props.commands)
-    let command = commands[step]
-    command.pos = pos
-    commands[step] = command
-    this.calculate(commands)
   }
 
   execute() {

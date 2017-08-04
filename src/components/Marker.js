@@ -10,13 +10,17 @@ class Marker extends createjs.Shape {
     this.graphics.beginFill('#f00')
     this.graphics.drawRect(-5, -5, 10, 10)
     this.circle = new createjs.Shape()
+    this.original = new createjs.Shape()
+    this.original.circle = new createjs.Shape()
+
+    this.app.stage.addChild(this.original.circle)
+    this.app.stage.addChild(this.original)
+    this.app.stage.addChild(this.circle)
+    this.app.stage.addChild(this)
 
     this.on('mousedown', this.onMouseDown)
     this.on('pressmove', this.onPressMove)
     this.on('pressup', this.onPressUp)
-
-    this.app.stage.addChild(this.circle)
-    this.app.stage.addChild(this)
 
     window.marker = this
   }
@@ -42,6 +46,22 @@ class Marker extends createjs.Shape {
     this.app.update = true
   }
 
+  showOriginal(pos) {
+    this.original.graphics.beginFill('#f00')
+    this.original.graphics.drawRect(-5, -5, 10, 10)
+    this.original.circle.graphics.beginFill('#00f')
+    this.original.circle.graphics.drawCircle(0, 0, 20)
+
+    this.original.x = pos.x
+    this.original.y = pos.y
+    this.original.circle.x = pos.x
+    this.original.circle.y = pos.y
+
+    this.original.alpha = 0.3
+    this.original.circle.alpha = 0.3
+    this.app.update = true
+  }
+
   locate(pos) {
     this.graphics.beginFill('#f00')
     this.graphics.drawRect(-5, -5, 10, 10)
@@ -56,41 +76,6 @@ class Marker extends createjs.Shape {
     this.app.command.update(pos)
   }
 
-  record() {
-    console.log('record')
-    this.app.select.clear()
-
-    this.original = new createjs.Shape()
-    this.original.graphics.beginFill('#f00')
-    this.original.graphics.drawRect(-5, -5, 10, 10)
-    this.original.circle = new createjs.Shape()
-    this.original.circle.graphics.beginFill('#00f')
-    this.original.circle.graphics.drawCircle(0, 0, 20)
-
-    this.original.x = this.x
-    this.original.y = this.y
-    this.original.circle.x = this.x
-    this.original.circle.y = this.y
-
-    this.original.alpha = 0.3
-    this.original.circle.alpha = 0.3
-
-    this.app.stage.addChild(this.original.circle)
-    this.app.stage.addChild(this.original)
-
-    this.x = this.x + 100
-    this.circle.x = this.x
-    this.circle.graphics.beginFill('#00f')
-    this.circle.graphics.drawCircle(0, 0, 20)
-
-    this.isRecord = true
-    this.isSelect = true
-    this.original.isSelect = true
-
-    this.app.select.show()
-    this.app.update = true
-  }
-
   onMouseDown(e) {
     console.log('down')
   }
@@ -98,31 +83,11 @@ class Marker extends createjs.Shape {
   onPressMove(e) {
     console.log('move')
     this.drag()
-    /*
-    if (this.isRecord) {
-      this.drag()
-      this.app.select.show()
-    } else {
-      this.isSelect = true
-      this.drag()
-      this.app.select.show()
-    }
-    */
   }
 
   onPressUp(e) {
     console.log('pressup')
     this.drag()
-
-    if (this.isRecord) {
-
-    } else {
-      /*
-      this.isSelect = !this.isSelect
-      this.drag()
-      this.app.select.show()
-      */
-    }
   }
 }
 
