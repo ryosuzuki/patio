@@ -34,15 +34,15 @@ class Marker extends createjs.Shape {
     this.app.update = true
   }
 
-  show(pos) {
+  show(select = false) {
     this.graphics.beginFill('#f00')
     this.graphics.drawRect(-5, -5, 10, 10)
-    this.x = pos.x
-    this.y = pos.y
-    this.circle.graphics.beginFill('#00f')
-    this.circle.graphics.drawCircle(0, 0, 20)
-    this.circle.x = this.x
-    this.circle.y = this.y
+    if (select) {
+      this.circle.graphics.beginFill('#00f')
+      this.circle.graphics.drawCircle(0, 0, 20)
+      this.circle.x = this.x
+      this.circle.y = this.y
+    }
     this.app.update = true
   }
 
@@ -72,8 +72,9 @@ class Marker extends createjs.Shape {
 
   drag(pos) {
     this.clear()
-    if (!pos) pos = { x: this.app.stage.mouseX, y: this.app.stage.mouseY }
-    this.app.command.update(pos)
+    this.x = this.app.stage.mouseX
+    this.y = this.app.stage.mouseY
+    this.app.command.calculate()
   }
 
   onMouseDown(e) {

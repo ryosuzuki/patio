@@ -57,9 +57,10 @@ class Panel extends Component {
               <div className={ "event" }  id={ command.id } key={ command.id } onClick={ this.onChange.bind(this, i)}>
                 <div className="content">
                   <div className="summary">
-                    { `${command.type} ${JSON.stringify(command.attr)}` }
+                    { command.type }
                   </div>
                   <div className="text">
+                    { JSON.stringify(command.attr) }
                   </div>
                 </div>
               </div>

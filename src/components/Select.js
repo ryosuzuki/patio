@@ -4,7 +4,6 @@ class Select extends createjs.Shape {
     super()
 
     this.app = app
-
     this.lines = []
     this.labels = []
     for (let i = 0; i < 2; i++) {
@@ -25,38 +24,35 @@ class Select extends createjs.Shape {
     this.app.update = true
   }
 
-  show(current, prev) {
+  show(object, prev) {
     this.clear()
     if (!prev) {
-      let pos = current.pos
       for (let i = 0; i < 2; i++) {
         this.lines[i].graphics.setStrokeStyle(3)
         this.lines[i].graphics.beginStroke('#aaa')
-        this.lines[i].graphics.moveTo(pos.x*i, pos.y*(1-i))
-        this.lines[i].graphics.lineTo(pos.x, pos.y)
+        this.lines[i].graphics.moveTo(object.x*i, object.y*(1-i))
+        this.lines[i].graphics.lineTo(object.x, object.y)
         this.lines[i].graphics.endStroke()
       }
-      this.labels[0].text = Math.floor(pos.x)
-      this.labels[0].x = pos.x / 2
-      this.labels[0].y = pos.y + 10
-      this.labels[1].text = Math.floor(pos.y)
-      this.labels[1].x = pos.x + 10
-      this.labels[1].y = pos.y / 2
+      this.labels[0].text = Math.floor(object.x)
+      this.labels[0].x = object.x / 2
+      this.labels[0].y = object.y + 10
+      this.labels[1].text = Math.floor(object.y)
+      this.labels[1].x = object.x + 10
+      this.labels[1].y = object.y / 2
     } else {
-      let pos1 = current.pos
-      let pos0 = prev.pos
       this.lines[0].graphics.setStrokeStyle(3)
       this.lines[0].graphics.beginStroke('#aaa')
-      this.lines[0].graphics.moveTo(pos0.x, pos0.y)
-      this.lines[0].graphics.lineTo(pos1.x, pos1.y)
+      this.lines[0].graphics.moveTo(prev.x, prev.y)
+      this.lines[0].graphics.lineTo(object.x, object.y)
       this.lines[0].graphics.endStroke()
 
       let dist = Math.sqrt(
-        (pos1.x - pos0.x)**2 + (pos1.y - pos0.y)**2
+        (object.x - prev.x)**2 + (object.y - prev.y)**2
       )
       this.labels[0].text = Math.floor(dist)
-      this.labels[0].x = (pos0.x + pos1.x) / 2 + 10
-      this.labels[0].y = (pos0.y + pos1.y) / 2 + 10
+      this.labels[0].x = (prev.x + object.x) / 2 + 10
+      this.labels[0].y = (prev.y + object.y) / 2 + 10
     }
     this.app.update = true
   }

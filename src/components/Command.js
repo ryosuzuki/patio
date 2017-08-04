@@ -9,31 +9,17 @@ class Command {
   add(type) {
     let step = this.app.props.step + 1
     let commands = this.app.props.commands
-    let object
-    if (type === 'LOCATE') {
-      object = new Marker()
-    }
-    if (type === 'MOVE') {
-      object = commands[step-1].object
-    }
+    let object = new Marker()
+    object.x = 100
+    object.y = 100
     let command = {
       id: step,
       type: type,
       object: object,
       attr: { x: 100, y: 100 },
-      pos: { x: 100, y: 100 },
     }
     commands = [...commands, command]
     this.calculate(commands, step)
-  }
-
-  update(pos) {
-    let step = this.app.props.step
-    let commands = _.clone(this.app.props.commands)
-    let command = commands[step]
-    command.pos = pos
-    commands[step] = command
-    this.calculate(commands)
   }
 
   calculate(commands, step) {
@@ -41,23 +27,27 @@ class Command {
     if (!commands) commands = _.clone(this.app.props.commands)
     for (let i = 0; i < commands.length; i++) {
       let command = commands[i]
-      let prev = commands[i-1]
-      if (!prev) prev = { pos: { x: 0, y: 0 } }
+      let object = command.object
+      let prev = i > 0 ? commands[i-1].object : { x: 0, y: 0 }
       if (i <= step) {
         command.attr = {
-          x: Math.floor(command.pos.x - prev.pos.x),
-          y: Math.floor(command.pos.y - prev.pos.y)
+          x: Math.floor(object.x - prev.x),
+          y: Math.floor(object.y - prev.y)
         }
       } else {
-        command.pos = {
-          x: Math.floor(prev.pos.x + command.attr.x),
-          y: Math.floor(prev.pos.y + command.attr.y)
-        }
+        object.x = Math.floor(prev.x + command.attr.x)
+        object.y = Math.floor(prev.y + command.attr.y)
       }
       commands[i] = command
+
+      if (i === step) {
+        object.show(true)
+      } else {
+        object.show(false)
+      }
+      this.app.select.show(object, prev)
     }
 
-    this.show(commands, step)
     this.app.updateState({ commands: commands, step: step })
   }
 
@@ -74,7 +64,6 @@ class Command {
       }
     }
     object.show(command.pos)
-    this.app.select.show(command, prev)
   }
 
   execute() {
