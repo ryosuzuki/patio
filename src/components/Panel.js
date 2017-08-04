@@ -23,26 +23,6 @@ class Panel extends Component {
     console.log(item)
     let type = item.toUpperCase()
     this.app.command.add(type)
-    /*
-    if (item === 'Move') {
-      let objects = this.app.stage.children.filter(object => object.isSelect)
-      if (objects.length > 0) {
-        let object = objects[0]
-        let commands = this.props.commands
-        let command = {
-          id: step,
-          object: object,
-          type: 'MOVE',
-          attr: { x: 100, y: 0 }
-        }
-        commands = [...commands, command]
-        this.app.updateState({ commands: commands })
-
-        object.record()
-      }
-
-    }
-    */
   }
 
   onChange(step) {
