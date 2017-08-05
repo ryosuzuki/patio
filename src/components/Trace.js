@@ -34,12 +34,55 @@ class Trace extends Component {
     } else {
       let command = {
         type: type,
-        attr: { x: 100, y: 100 },
+        attr: { coord: 'xy', dx: 400, dy: 200 },
+      }
+
+      if (commands.length > 0) {
+        command = {
+          type: type,
+          attr: {
+            coord: 'polar',
+            center: { x: 200, y: 200},
+            angle: (30 / 180) * Math.PI,
+            dist: 200,
+          }
+        }
       }
       commands = [...commands, command]
     }
     this.app.updateState({ commands: commands, step: step })
     this.calculate(step, commands)
+  }
+
+  getPos(prev, attr, iter) {
+    let pos
+    if (attr.coord === 'xy') {
+      let dx = attr.dx
+      let dy = attr.dy
+      pos = {
+        x: Math.floor(prev.x + dx),
+        y: Math.floor(prev.y + dy)
+      }
+    } else {
+      let center = attr.center
+      let angle = attr.angle
+      let dist = attr.dist
+      let unit = {
+        x: prev.x - center.x,
+        y: prev.y - center.y
+      }
+      let base = Math.atan(unit.y / unit.x)
+      if (iter) {
+        angle = angle * (10 - iter + 1)
+      }
+      // angle = angle - base
+      pos = {
+        x: center.x + Math.floor(dist * Math.cos(angle)),
+        y: center.y - Math.floor(dist * Math.sin(angle))
+      }
+      console.log(angle)
+    }
+    return pos
   }
 
   update(pos) {
@@ -51,16 +94,19 @@ class Trace extends Component {
       let command = commands[i]
       if (command.type === 'LOOP') continue
       if (command.type === 'END_LOOP') continue
-      prev = {
-        x: Math.floor(prev.x + command.attr.x),
-        y: Math.floor(prev.y + command.attr.y)
-      }
+      prev = this.getPos(prev, command.attr)
     }
     let command = commands[step]
-    command.attr = {
-      x: Math.floor(pos.x - prev.x),
-      y: Math.floor(pos.y - prev.y)
+    // change here as well
+    if (command.attr.coord === 'xy') {
+      command.attr = {
+        x: Math.floor(pos.x - prev.x),
+        y: Math.floor(pos.y - prev.y)
+      }
+    } else {
+
     }
+
     commands[step] = command
     this.calculate(step, commands)
     this.app.updateState({ commands: commands, step: step })
@@ -98,16 +144,17 @@ class Trace extends Component {
 
       let object = new Marker()
       let select = new Select()
-      object.x = Math.floor(prev.x + command.attr.x)
-      object.y = Math.floor(prev.y + command.attr.y)
+      let pos = this.getPos(prev, command.attr, j)
+      object.x = pos.x
+      object.y = pos.y
 
       if (!flag || j ===10) {
-        object.copy = false
+        object.isCopy = false
       } else {
-        object.copy = true
+        object.isCopy = true
       }
 
-      if (i === step && !object.copy) {
+      if (i === step && !object.isCopy) {
         object.show(true)
       } else {
         object.show(false)
@@ -233,35 +280,5 @@ if (i === step-1) {
     this.animate = false
     object.locate(end)
   })
-}
-*/
-
-/*
-execute() {
-  let objects = {}
-  for (let i = 0; i < this.step; i++) {
-    let command = this.app.props.commands[i]
-    switch (command.type) {
-      case 'LOCATE':
-        let object = command.object
-        objects[object.id] = {
-          x: command.attr.x,
-          y: command.attr.y
-        }
-        object.locate(command.attr)
-        break
-      case 'MOVE':
-        let object = command.object
-        let start = objects[object.id]
-        let end = {
-          x: start.x + command.attr.x,
-          y: start.y + command.attr.y,
-        }
-        objects[object.id] = end
-        break
-      default:
-        break
-    }
-  }
 }
 */

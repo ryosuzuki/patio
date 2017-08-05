@@ -32,7 +32,6 @@ class App extends Component {
 
   updateState(state, callback) {
     this.props.store.dispatch(actions.updateState(state))
-    // this.props.store.dispatch(actions.updateState(Object.assign(this.props.state, state)))
   }
 
   render() {
