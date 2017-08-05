@@ -63,7 +63,7 @@ class Marker extends createjs.Shape {
     this.app.update = true
   }
 
-  drag(pos) {
+  drag() {
     this.x = this.app.stage.mouseX
     this.y = this.app.stage.mouseY
     window.trace.calculate()

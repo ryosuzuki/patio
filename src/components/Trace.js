@@ -11,6 +11,10 @@ class Trace extends Component {
   constructor() {
     super()
     this.app = app
+    this.state = {
+      traces: [],
+      step: 0
+    }
     window._ = _
     window.trace = this
   }
@@ -46,40 +50,78 @@ class Trace extends Component {
   calculate(step, commands) {
     if (step === undefined) step = this.app.props.step
     if (!commands) commands = _.clone(this.app.props.commands)
+
     let prev = { x: 0, y: 0 }
-    for (let i = 0; i < commands.length; i++) {
+    for (let i = 0; i < step; i++) {
       let command = commands[i]
       if (command.type === 'LOOP') continue
       if (command.type === 'END_LOOP') continue
-
       let object = command.object
-      let select = command.select
-      if (i <= step) {
-        command.attr = {
-          x: Math.floor(object.x - prev.x),
-          y: Math.floor(object.y - prev.y)
-        }
-      } else {
-        object.x = Math.floor(prev.x + command.attr.x)
-        object.y = Math.floor(prev.y + command.attr.y)
+      command.attr = {
+        x: Math.floor(object.x - prev.x),
+        y: Math.floor(object.y - prev.y)
       }
       commands[i] = command
-
-      if (i === step) {
-        object.show(true)
-      } else {
-        object.show(false)
-      }
-      select.show(object, prev)
       prev = command.object
     }
-
     this.app.updateState({ commands: commands, step: step })
+
+    let traces = []
+    let j = 0
+    let index = 0
+    let flag = false
+    let i = 0
+    while (i < commands.length) {
+      let command = commands[i]
+
+      if (command.type === 'LOOP') {
+        if (j === 0) j = 10
+        index = i
+        i++
+        continue
+      }
+
+      if (command.type === 'END_LOOP') {
+        j--
+        if (j > 0) {
+          i = index
+        } else {
+          i++
+        }
+        continue
+      }
+
+      console.log(command.type)
+
+      let object = new Marker()
+      let select = new Select()
+      object.x = Math.floor(prev.x + command.attr.x)
+      object.y = Math.floor(prev.y + command.attr.y)
+      object.show(false)
+      select.show(object, prev)
+      prev = object
+      let trace = {
+        type: command.type,
+        object: object,
+        select: select,
+        prev: prev
+      }
+      traces.push(trace)
+      i++
+    }
+
+    this.setState({ traces: traces })
+    console.log(traces)
   }
 
   onSortEnd(event) {
     let commands = arrayMove(this.props.commands, event.oldIndex, event.newIndex)
+    this.calculate(this.props.step, commands)
     this.app.updateState({ commands: commands })
+  }
+
+  onChange(step) {
+    this.setState({ step: step })
   }
 
   render() {
@@ -94,9 +136,9 @@ class Trace extends Component {
           <Slider
             dots
             min={ 0 }
-            max={ this.props.commands.length-1 }
-            value={ this.props.step }
-            onChange={ onChange }
+            max={ this.state.traces.length-1 }
+            value={ this.state.step }
+            onChange={ this.onChange.bind(this) }
             handle={ handle }
           />
         </div>
