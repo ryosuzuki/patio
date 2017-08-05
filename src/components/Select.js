@@ -6,7 +6,7 @@ class Select extends createjs.Shape {
     this.app = app
     this.lines = []
     this.labels = []
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 5; i++) {
       this.lines[i] = new createjs.Shape()
       this.labels[i] = new createjs.Text("", "18px Arial", "#000")
       this.labels[i].hitArea = this.getHitArea()
@@ -26,7 +26,33 @@ class Select extends createjs.Shape {
 
   show(object, prev) {
     this.clear()
-    if (!prev) {
+    for (let i = 0; i < 5; i++) {
+      this.lines[i].graphics.setStrokeDash([2, 2])
+      this.lines[i].graphics.setStrokeStyle(3)
+      this.lines[i].graphics.beginStroke('#ddd')
+    }
+    this.lines[0].graphics.moveTo(prev.x, prev.y)
+    this.lines[0].graphics.lineTo(object.x, prev.y)
+    this.lines[1].graphics.moveTo(object.x, prev.y)
+    this.lines[1].graphics.lineTo(object.x, object.y)
+    this.lines[2].graphics.moveTo(prev.x, prev.y)
+    this.lines[2].graphics.lineTo(prev.x, object.y)
+    this.lines[3].graphics.moveTo(prev.x, object.y)
+    this.lines[3].graphics.lineTo(object.x, object.y)
+
+    this.lines[2].graphics.moveTo(prev.x, prev.y)
+    this.lines[2].graphics.lineTo(object.x, object.y)
+
+    this.labels[0].text = Math.floor(object.x - prev.x)
+    this.labels[0].x = (prev.x + object.x) / 2 - 10
+    this.labels[0].y = prev.y - 10
+    this.labels[1].text = Math.floor(object.y - prev.y)
+    this.labels[1].x = object.x - 10
+    this.labels[1].y = (prev.y + object.y)  / 2 - 10
+
+    this.app.update = true
+    return false
+    if (!prev || true) {
       for (let i = 0; i < 2; i++) {
         this.lines[i].graphics.setStrokeStyle(3)
         this.lines[i].graphics.beginStroke('#aaa')
