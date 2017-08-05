@@ -40,17 +40,25 @@ class Select extends createjs.Shape {
     let dist = attr.dist
     let angle = attr.angle
     this.lines[0].graphics.moveTo(center.x, center.y)
-    this.lines[0].graphics.lineTo(center.x + dist, center.y)
-    this.lines[1].graphics.moveTo(center.x, center.y)
-    this.lines[1].graphics.lineTo(object.x, object.y)
-    this.arc.graphics.arc(center.x, center.y, dist / 5, angle, 0)
+    this.lines[0].graphics.lineTo(object.x, object.y)
 
     this.labels[0].text = attr.dist
     this.labels[0].x = (center.x + object.x) / 2 - 20
     this.labels[0].y = (center.y + object.y) / 2
-    this.labels[1].text = Math.floor((angle / Math.PI) * 180)
-    this.labels[1].x = center.x - 10
-    this.labels[1].y = center.y - 10
+
+    if (prev.id) {
+      let unit = {
+        x: prev.x - center.x,
+        y: prev.y - center.y
+      }
+      let base = Math.atan2(unit.y, unit.x)
+      this.lines[1].graphics.moveTo(center.x, center.y)
+      this.lines[1].graphics.lineTo(prev.x, prev.y)
+      this.arc.graphics.arc(center.x, center.y, dist/5, angle + base, base)
+      this.labels[1].text = Math.floor((angle / Math.PI) * 180)
+      this.labels[1].x = center.x - 10
+      this.labels[1].y = center.y - 10
+    }
   }
 
   showXY(object, prev, attr) {

@@ -13,7 +13,7 @@ import { Provider } from 'react-redux'
 let initialStore = {
   commands: [],
   step: -1,
-  coord: 'xy'
+  coord: 'polar'
 }
 
 let store = configureStore(initialStore)

@@ -44,8 +44,8 @@ class Trace extends Component {
           x: this.app.stage.canvas.width / 2,
           y: this.app.stage.canvas.height / 2
         },
-        dist: 100,
-        angle: (30 / 180) * Math.PI
+        dist: 300,
+        angle: -(30 / 180) * Math.PI
       }
       commands = [...commands, command]
     }
@@ -66,20 +66,22 @@ class Trace extends Component {
       let center = attr.center
       let angle = attr.angle
       let dist = attr.dist
-      /*
-      let unit = {
-        x: prev.x - center.x,
-        y: prev.y - center.y
-      }
-      let base = Math.atan(unit.y / unit.x)
-      if (iter) {
-        angle = angle * (10 - iter + 1)
-      }
-      */
-      // angle = angle - base
-      pos = {
-        x: center.x + dist * Math.cos(angle),
-        y: center.y + dist * Math.sin(angle)
+      if (prev.id) {
+        let unit = {
+          x: prev.x - center.x,
+          y: prev.y - center.y
+        }
+        let base = Math.atan2(unit.y, unit.x)
+        angle = angle + base
+        pos = {
+          x: center.x + dist * Math.cos(angle),
+          y: center.y + dist * Math.sin(angle)
+        }
+      } else {
+        pos = {
+          x: center.x + dist * Math.cos(angle),
+          y: center.y + dist * Math.sin(angle)
+        }
       }
     }
     return pos
@@ -106,8 +108,19 @@ class Trace extends Component {
     let dy = pos.y - center.y
     let dist = Math.sqrt(dx*dx + dy*dy)
     let angle = Math.atan2(dy, dx)
+    if (step > 0) {
+      let unit = {
+        x: prev.x - center.x,
+        y: prev.y - center.y
+      }
+      let base = Math.atan2(unit.y, unit.x)
+      angle = angle - base
+    }
+
     attr.dist = Math.floor(dist)
     attr.angle = angle
+
+
 
     command.attr = attr
     commands[step] = command
