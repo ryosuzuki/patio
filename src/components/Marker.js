@@ -11,13 +11,12 @@ class Marker extends createjs.Shape {
     this.graphics.drawRect(-5, -5, 10, 10)
     this.circle = new createjs.Shape()
 
-    this.app.stage.addChild(this.circle)
-    this.app.stage.addChild(this)
-
     this.on('mousedown', this.onMouseDown)
     this.on('pressmove', this.onPressMove)
     this.on('pressup', this.onPressUp)
 
+    this.app.stage.addChild(this.circle)
+    this.app.stage.addChild(this)
     window.marker = this
   }
 

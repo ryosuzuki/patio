@@ -7,7 +7,7 @@ class Panel extends Component {
   constructor() {
     super()
     this.state = {
-      items: ['Locate', 'Move', 'Variable', 'Loop']
+      items: ['Locate', 'Move', 'Loop']
     }
     this.app = app
     window.panel = this

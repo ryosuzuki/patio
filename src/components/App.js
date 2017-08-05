@@ -56,7 +56,8 @@ class App extends Component {
       command.attr.coord = coord
       commands[step] = command
     }
-    window.trace.calculate(step, commands)
+    let current = this.stage.children.filter(a => a.isSelect)[0]
+    if (current) window.trace.update(current)
     this.updateState({ coord: coord, commands: commands })
   }
 

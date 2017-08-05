@@ -3,6 +3,7 @@ import Slider from 'rc-slider'
 import Tooltip from 'rc-tooltip'
 import {SortableContainer, SortableElement,   SortableHandle, arrayMove} from 'react-sortable-hoc'
 import _ from 'lodash'
+import async from 'async'
 
 import Marker from './Marker'
 import Select from './Select'
@@ -17,6 +18,8 @@ class Trace extends Component {
     }
     window._ = _
     window.trace = this
+    window.async = async
+
   }
 
   add(type) {
@@ -24,7 +27,8 @@ class Trace extends Component {
     let commands = this.props.commands
     if (type === 'LOOP') {
       let start = {
-        type: 'LOOP'
+        type: 'LOOP',
+        attr: { count: 10 }
       }
       let end = {
         type: 'END_LOOP'
@@ -50,6 +54,7 @@ class Trace extends Component {
       commands = [...commands, command]
     }
     this.app.updateState({ commands: commands, step: step })
+    this.setState({ step: this.state.traces.length })
     this.calculate(step, commands)
   }
 
@@ -193,10 +198,58 @@ class Trace extends Component {
     let commands = arrayMove(this.props.commands, event.oldIndex, event.newIndex)
     this.calculate(this.props.step, commands)
     this.app.updateState({ commands: commands })
+    this.setState({ step: this.state.traces.length })
   }
 
   onChange(step) {
     this.setState({ step: step })
+  }
+
+  execute() {
+    console.log('execute')
+    this.setState({ step: 0 })
+    this.app.stage.removeAllChildren()
+    this.app.update = true
+
+    let traces = this.state.traces
+    let indexes = this.state.traces.map((trace, index) => index)
+    async.eachSeries(indexes, (index, callback) => {
+      console.log(index)
+      this.execute2(index, callback)
+    })
+  }
+
+  execute2(i, callback) {
+    this.setState({ step: i })
+    let trace = this.state.traces[i]
+    let object = trace.object
+    this.app.stage.addChild(object)
+
+    let start = { x: 0, y: 0 }
+    let end = { x: object.x, y: object.y }
+    if (trace.type === 'LOCATE') {
+      start = { x: 0, y: 0 }
+    }
+    if (trace.type === 'MOVE') {
+      let prev = this.state.traces[i-1].object
+      start = { x: prev.x, y: prev.y }
+      this.app.stage.removeChild(prev)
+    }
+    this.app.animate = true
+    object.x = start.x
+    object.y = start.y
+    createjs.Tween
+    .get(object)
+    .to(start, 0)
+    .to(end, 500)
+    .call(() => {
+      object.x = end.x
+      object.y = end.y
+      this.app.animate = false
+      callback()
+    })
+
+
   }
 
   render() {
@@ -217,6 +270,9 @@ class Trace extends Component {
             handle={ handle }
           />
         </div>
+        <button className="ui basic primary button" style={{ position: 'fixed', bottom: 20, left: 20 }} onClick={ this.execute.bind(this) }>
+          Run
+        </button>
       </div>
     )
   }
@@ -233,21 +289,34 @@ const onChange = (step) => {
   window.app.updateState({ step: step })
 }
 
-const SortableItem = SortableElement(({item, step, indent}) =>
-  <div className="event" id={ step }
-       style={{ marginLeft: 20 * indent }}
-       onClick={ () => { onChange(step) } }>
-    <div className="content">
-      <div className="summary">
-        <DragHandle />
-        <b>{ item.type }</b>&nbsp;
-      </div>
-      <div className="text">
-        <span>{ JSON.stringify(item.attr, null, 2) }</span>
+const SortableItem = SortableElement(({item, step, indent}) => {
+  let attr
+  if (['LOCATE', 'MOVE'].includes(item.type)) {
+    if (item.attr.coord === 'xy') {
+      attr = `offset dx: ${item.attr.dx}, dy: ${item.attr.dx}`
+    } else {
+      attr = `dist ${Math.floor(item.attr.dist)} rotate ${Math.floor(item.attr.angle / Math.PI * 180)}`
+    }
+  }
+  if (['LOOP'].includes(item.type)) {
+    attr = `${item.attr.count} times`
+  }
+  return (
+    <div className="event" id={ step }
+         style={{ marginLeft: 20 * indent }}
+         onClick={ () => { onChange(step) } }>
+      <div className="content">
+        <div className="summary">
+          <DragHandle />
+          <b>{ item.type }</b>&nbsp;
+        </div>
+        <div className="text">
+          <span>{ attr }</span>
+        </div>
       </div>
     </div>
-  </div>
-);
+  )
+})
 
 const SortableList = SortableContainer(({items}) => {
   return (
@@ -266,7 +335,7 @@ const SortableList = SortableContainer(({items}) => {
         )
       })}
     </div>
-  );
+  )
 })
 
 const Handle = Slider.Handle;
@@ -284,17 +353,4 @@ const handle = (props) => {
   );
 };
 
-/*
-if (i === step-1) {
-  this.animate = true
-  object.locate(start)
-  createjs.Tween
-  .get(object)
-  .to(start, 0)
-  .to(end, 500)
-  .call(() => {
-    this.animate = false
-    object.locate(end)
-  })
-}
-*/
+

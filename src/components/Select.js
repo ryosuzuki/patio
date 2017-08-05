@@ -71,9 +71,12 @@ class Select extends createjs.Shape {
     this.lines[3].graphics.moveTo(prev.x, object.y)
     this.lines[3].graphics.lineTo(object.x, object.y)
 
+    this.lines[4].graphics.moveTo(prev.x, prev.y)
+    this.lines[4].graphics.lineTo(object.x, object.y)
+
     this.labels[0].text = attr.dx
     this.labels[0].x = (prev.x + object.x) / 2 - 10
-    this.labels[0].y = prev.y - 10
+    this.labels[0].y = object.y - 10
     this.labels[1].text = attr.dy
     this.labels[1].x = object.x - 10
     this.labels[1].y = (prev.y + object.y)  / 2 - 10
