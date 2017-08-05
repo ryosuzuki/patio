@@ -20,8 +20,8 @@ class Trace extends Component {
   }
 
   add(type) {
-    let step = this.app.props.step + 1
-    let commands = this.app.props.commands
+    let step = this.props.step + 1
+    let commands = this.props.commands
     if (type === 'LOOP') {
       let start = {
         type: 'LOOP'
@@ -34,18 +34,18 @@ class Trace extends Component {
     } else {
       let command = {
         type: type,
-        attr: { coord: 'xy', dx: 400, dy: 200 },
+        attr: {},
       }
-
-      if (commands.length > 0) {
-        command = {
-          type: type,
-          attr: {
-            coord: 'polar',
-            center: { x: 200, y: 200},
-            angle: (30 / 180) * Math.PI,
-          }
-        }
+      command.attr = {
+        coord: this.props.coord,
+        dx: 100,
+        dy: 100,
+        center: {
+          x: this.app.stage.canvas.width / 2,
+          y: this.app.stage.canvas.height / 2
+        },
+        dist: 100,
+        angle: (30 / 180) * Math.PI
       }
       commands = [...commands, command]
     }
@@ -65,28 +65,30 @@ class Trace extends Component {
     } else {
       let center = attr.center
       let angle = attr.angle
+      let dist = attr.dist
+      /*
       let unit = {
         x: prev.x - center.x,
         y: prev.y - center.y
       }
-      let dist = Math.sqrt(unit.x**2 + unit.y**2)
       let base = Math.atan(unit.y / unit.x)
       if (iter) {
         angle = angle * (10 - iter + 1)
       }
+      */
       // angle = angle - base
       pos = {
-        x: center.x + Math.floor(dist * Math.cos(angle)),
-        y: center.y - Math.floor(dist * Math.sin(angle))
+        x: center.x + dist * Math.cos(angle),
+        y: center.y + dist * Math.sin(angle)
       }
     }
     return pos
   }
 
   update(pos) {
-    let step = this.app.props.step
-    let commands = _.clone(this.app.props.commands)
-
+    let step = this.props.step
+    let commands = _.clone(this.props.commands)
+    if (step < 0) return false
     let prev = { x: 0, y: 0 }
     for (let i = 0; i < step; i++) {
       let command = commands[i]
@@ -95,34 +97,26 @@ class Trace extends Component {
       prev = this.getPos(prev, command.attr)
     }
     let command = commands[step]
-    if (command.attr.coord === 'xy') {
-      command.attr = {
-        coord: 'xy',
-        dx: Math.floor(pos.x - prev.x),
-        dy: Math.floor(pos.y - prev.y)
-      }
-    } else {
-      let dist = 200
-      let center = { x: 200, y: 200 }
-      let a = { x: pos.x - center.x, y: pos.y - center.y }
-      let b = { x: prev.x - center.x, y: prev.y - center.y }
-      let cos = (a.x * b.x + a.y + b.y) / (Math.sqrt(a.x**2 + a.y**2) * Math.sqrt(b.x**2 + b.y**2))
-      let angle = Math.acos(cos)
-      command.attr = {
-        coord: 'polar',
-        center: center,
-        angle: angle
-      }
-    }
+    let attr = command.attr
+    attr.dx = Math.floor(pos.x - prev.x)
+    attr.dy = Math.floor(pos.y - prev.y)
 
+    let center = attr.center
+    let dx = pos.x - center.x
+    let dy = pos.y - center.y
+    let dist = Math.sqrt(dx*dx + dy*dy)
+    let angle = Math.atan2(dy, dx)
+    attr.dist = Math.floor(dist)
+    attr.angle = angle
+
+    command.attr = attr
     commands[step] = command
     this.calculate(step, commands)
     this.app.updateState({ commands: commands, step: step })
   }
 
   calculate(step, commands) {
-    if (step === undefined) step = this.app.props.step
-    if (!commands) commands = _.clone(this.app.props.commands)
+    if (!commands) commands = _.clone(this.props.commands)
 
     this.app.stage.removeAllChildren()
     let traces = []
@@ -153,6 +147,7 @@ class Trace extends Component {
       let object = new Marker()
       let select = new Select()
       let pos = this.getPos(prev, command.attr, j)
+      let attr = command.attr
       object.x = pos.x
       object.y = pos.y
 
@@ -167,7 +162,7 @@ class Trace extends Component {
       } else {
         object.show(false)
       }
-      select.show(object, prev)
+      select.show(object, prev, attr)
       prev = object
       let trace = {
         type: command.type,
@@ -231,11 +226,11 @@ const SortableItem = SortableElement(({item, step, indent}) =>
        onClick={ () => { onChange(step) } }>
     <div className="content">
       <div className="summary">
-      </div>
-      <div className="text">
         <DragHandle />
         <b>{ item.type }</b>&nbsp;
-        <span>{ JSON.stringify(item.attr) }</span>
+      </div>
+      <div className="text">
+        <span>{ JSON.stringify(item.attr, null, 2) }</span>
       </div>
     </div>
   </div>

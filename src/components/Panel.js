@@ -44,6 +44,7 @@ class Panel extends Component {
         <Trace
           commands={ this.props.commands }
           step={ this.props.step }
+          coord={ this.props.coord }
         />
       </div>
     )

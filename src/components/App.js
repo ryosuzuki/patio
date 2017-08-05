@@ -14,9 +14,6 @@ class App extends Component {
     window.app = this
     this.update = true
     this.animate = false
-    this.state = {
-      coord: 'xy'
-    }
   }
 
   componentDidMount() {
@@ -34,8 +31,9 @@ class App extends Component {
     }
   }
 
-  updateState(state, callback) {
-    this.props.store.dispatch(actions.updateState(state))
+  updateState(state) {
+    let result = this.props.store.dispatch(actions.updateState(state))
+    return result.state
   }
 
   resize() {
@@ -44,11 +42,22 @@ class App extends Component {
   }
 
   onClick() {
-    if (this.state.coord === 'xy') {
-      this.setState({ coord: 'polar' })
+    let coord
+    if (this.props.coord === 'xy') {
+      coord = 'polar'
     } else {
-      this.setState({ coord: 'xy' })
+      coord = 'xy'
     }
+
+    let step = this.props.step
+    let commands = _.clone(this.props.commands)
+    let command = commands[step]
+    if (command) {
+      command.attr.coord = coord
+      commands[step] = command
+    }
+    window.trace.calculate(step, commands)
+    this.updateState({ coord: coord, commands: commands })
   }
 
   render() {
@@ -57,10 +66,11 @@ class App extends Component {
         <Panel
           commands={ this.props.commands }
           step={ this.props.step }
+          coord={ this.props.coord }
         />
         <canvas ref="canvas" id="canvas" width="1000" height="600"></canvas>
         <button className="ui basic button" style={{ position: 'fixed', bottom: 20, right: 20 }} onClick={ this.onClick.bind(this) }>
-          Change Coordinates: <b>{ this.state.coord }</b>
+          Change Coordinates: <b>{ this.props.coord }</b>
         </button>
       </div>
     )
