@@ -4,6 +4,7 @@ class Marker extends createjs.Shape {
     super()
 
     this.app = app
+    this.copy = false
     this.isSelect = false
     this.isRecord = false
 
@@ -28,6 +29,7 @@ class Marker extends createjs.Shape {
   show(select = false) {
     this.graphics.beginFill('#f00')
     this.graphics.drawRect(-5, -5, 10, 10)
+    this.isSelect = select
     if (select) {
       this.circle.graphics.beginFill('#00f')
       this.circle.graphics.drawCircle(0, 0, 20)
@@ -64,6 +66,8 @@ class Marker extends createjs.Shape {
   }
 
   drag() {
+    if (this.copy) return false
+    if (!this.isSelect) return false
     let pos = {
       x: this.app.stage.mouseX,
       y: this.app.stage.mouseY

@@ -75,19 +75,19 @@ class Trace extends Component {
     let index = 0
     let i = 0
     let j = 0
+    let flag = false
     let prev = { x: 0, y: 0 }
     while (i < commands.length) {
       let command = commands[i]
 
       if (command.type === 'LOOP') {
         if (j === 0) j = 10
-        index = i
-        i++
+        index = i; flag = true; i++
         continue
       }
 
       if (command.type === 'END_LOOP') {
-        j--
+        j--; flag = false
         if (j > 0) {
           i = index
         } else {
@@ -100,7 +100,18 @@ class Trace extends Component {
       let select = new Select()
       object.x = Math.floor(prev.x + command.attr.x)
       object.y = Math.floor(prev.y + command.attr.y)
-      object.show(false)
+
+      if (!flag || j ===10) {
+        object.copy = false
+      } else {
+        object.copy = true
+      }
+
+      if (i === step && !object.copy) {
+        object.show(true)
+      } else {
+        object.show(false)
+      }
       select.show(object, prev)
       prev = object
       let trace = {
