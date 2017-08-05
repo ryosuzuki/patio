@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Slider from 'rc-slider'
 import Tooltip from 'rc-tooltip'
-import {SortableContainer, SortableElement} from 'react-sortable-hoc'
+import {SortableContainer, SortableElement,   SortableHandle, arrayMove} from 'react-sortable-hoc'
 import _ from 'lodash'
 
 import Marker from './Marker'
@@ -20,11 +20,9 @@ class Trace extends Component {
     let commands = this.app.props.commands
     if (type === 'LOOP') {
       let start = {
-        id: step,
         type: 'LOOP'
       }
       let end = {
-        id: step+1,
         type: 'END_LOOP'
       }
       commands = [...commands, start]
@@ -35,7 +33,6 @@ class Trace extends Component {
       object.x = 100
       object.y = 100
       let command = {
-        id: step,
         type: type,
         object: object,
         select: select,
@@ -43,10 +40,10 @@ class Trace extends Component {
       }
       commands = [...commands, command]
     }
-    this.calculate(commands, step)
+    this.calculate(step, commands)
   }
 
-  calculate(commands, step) {
+  calculate(step, commands) {
     if (step === undefined) step = this.app.props.step
     if (!commands) commands = _.clone(this.app.props.commands)
     let prev = { x: 0, y: 0 }
@@ -80,24 +77,26 @@ class Trace extends Component {
     this.app.updateState({ commands: commands, step: step })
   }
 
-
-
-  onChange(step) {
-    this.app.updateState({ step: step })
-    this.app.execute(step)
+  onSortEnd(event) {
+    let commands = arrayMove(this.props.commands, event.oldIndex, event.newIndex)
+    this.app.updateState({ commands: commands })
   }
 
   render() {
     return(
       <div id="trace">
-        <SortableList items={ this.props.commands } onSortEnd={ this.onSortEnd } />
+        <SortableList
+          items={ this.props.commands }
+          distance={ 1 }
+          onSortEnd={ this.onSortEnd.bind(this) }
+        />
         <div className="slider-wrapper">
           <Slider
             dots
             min={ 0 }
             max={ this.props.commands.length-1 }
             value={ this.props.step }
-            onChange={ this.onChange.bind(this) }
+            onChange={ onChange }
             handle={ handle }
           />
         </div>
@@ -109,12 +108,22 @@ class Trace extends Component {
 
 export default Trace
 
-const SortableItem = SortableElement(({item}) =>
-  <div className="event"  id={ item.id }>
+const DragHandle = SortableHandle(() => <span>::</span>)
+
+const onChange = (step) => {
+  console.log(step)
+  window.trace.calculate(step)
+  window.app.updateState({ step: step })
+}
+
+const SortableItem = SortableElement(({item, step}) =>
+  <div className="event" id={ step }
+       onClick={ () => { onChange(step) } }>
     <div className="content">
       <div className="summary">
       </div>
       <div className="text">
+        <DragHandle />
         <b>{ item.type }</b>&nbsp;
         <span>{ JSON.stringify(item.attr) }</span>
       </div>
@@ -127,7 +136,7 @@ const SortableList = SortableContainer(({items}) => {
     <div className="ui feed">
       <h4 className="ui header">Program</h4>
       {items.map((item, index) => (
-        <SortableItem key={`item-${index}`} index={index} item={item} />
+        <SortableItem key={`item-${index}`} index={index} item={item} step={index} />
       ))}
     </div>
   );

@@ -23,13 +23,6 @@ class App extends Component {
     createjs.Ticker.on('tick', this.tick.bind(this))
   }
 
-  execute(step) {
-    console.log(step)
-    let commands = this.props.commands
-    window.trace.calculate(commands, step)
-    this.update = true
-  }
-
   tick(event) {
     if (this.update || this.animate) {
       this.update = false
