@@ -44,7 +44,6 @@ class Trace extends Component {
             coord: 'polar',
             center: { x: 200, y: 200},
             angle: (30 / 180) * Math.PI,
-            dist: 200,
           }
         }
       }
@@ -66,11 +65,11 @@ class Trace extends Component {
     } else {
       let center = attr.center
       let angle = attr.angle
-      let dist = attr.dist
       let unit = {
         x: prev.x - center.x,
         y: prev.y - center.y
       }
+      let dist = Math.sqrt(unit.x**2 + unit.y**2)
       let base = Math.atan(unit.y / unit.x)
       if (iter) {
         angle = angle * (10 - iter + 1)
@@ -97,14 +96,24 @@ class Trace extends Component {
       prev = this.getPos(prev, command.attr)
     }
     let command = commands[step]
-    // change here as well
     if (command.attr.coord === 'xy') {
       command.attr = {
-        x: Math.floor(pos.x - prev.x),
-        y: Math.floor(pos.y - prev.y)
+        coord: 'xy',
+        dx: Math.floor(pos.x - prev.x),
+        dy: Math.floor(pos.y - prev.y)
       }
     } else {
-
+      let dist = 200
+      let center = { x: 200, y: 200 }
+      let a = { x: pos.x - center.x, y: pos.y - center.y }
+      let b = { x: prev.x - center.x, y: prev.y - center.y }
+      let cos = (a.x * b.x + a.y + b.y) / (Math.sqrt(a.x**2 + a.y**2) * Math.sqrt(b.x**2 + b.y**2))
+      let angle = Math.acos(cos)
+      command.attr = {
+        coord: 'polar',
+        center: center,
+        angle: angle
+      }
     }
 
     commands[step] = command
