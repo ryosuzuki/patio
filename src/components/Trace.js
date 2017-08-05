@@ -32,45 +32,50 @@ class Trace extends Component {
       commands = [...commands, start]
       commands = [...commands, end]
     } else {
-      let object = new Marker()
-      let select = new Select()
-      object.x = 100
-      object.y = 100
       let command = {
         type: type,
-        object: object,
-        select: select,
         attr: { x: 100, y: 100 },
       }
       commands = [...commands, command]
     }
+    this.app.updateState({ commands: commands, step: step })
     this.calculate(step, commands)
   }
 
-  calculate(step, commands) {
-    if (step === undefined) step = this.app.props.step
-    if (!commands) commands = _.clone(this.app.props.commands)
+  update(pos) {
+    let step = this.app.props.step
+    let commands = _.clone(this.app.props.commands)
 
     let prev = { x: 0, y: 0 }
     for (let i = 0; i < step; i++) {
       let command = commands[i]
       if (command.type === 'LOOP') continue
       if (command.type === 'END_LOOP') continue
-      let object = command.object
-      command.attr = {
-        x: Math.floor(object.x - prev.x),
-        y: Math.floor(object.y - prev.y)
+      prev = {
+        x: Math.floor(prev.x + command.attr.x),
+        y: Math.floor(prev.y + command.attr.y)
       }
-      commands[i] = command
-      prev = command.object
     }
+    let command = commands[step]
+    command.attr = {
+      x: Math.floor(pos.x - prev.x),
+      y: Math.floor(pos.y - prev.y)
+    }
+    commands[step] = command
+    this.calculate(step, commands)
     this.app.updateState({ commands: commands, step: step })
+  }
 
+  calculate(step, commands) {
+    if (step === undefined) step = this.app.props.step
+    if (!commands) commands = _.clone(this.app.props.commands)
+
+    this.app.stage.removeAllChildren()
     let traces = []
-    let j = 0
     let index = 0
-    let flag = false
     let i = 0
+    let j = 0
+    let prev = { x: 0, y: 0 }
     while (i < commands.length) {
       let command = commands[i]
 
@@ -91,8 +96,6 @@ class Trace extends Component {
         continue
       }
 
-      console.log(command.type)
-
       let object = new Marker()
       let select = new Select()
       object.x = Math.floor(prev.x + command.attr.x)
@@ -104,14 +107,12 @@ class Trace extends Component {
         type: command.type,
         object: object,
         select: select,
-        prev: prev
       }
       traces.push(trace)
       i++
     }
-
+    this.app.update = true
     this.setState({ traces: traces })
-    console.log(traces)
   }
 
   onSortEnd(event) {
