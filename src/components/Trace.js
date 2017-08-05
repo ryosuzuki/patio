@@ -79,7 +79,6 @@ class Trace extends Component {
         x: center.x + Math.floor(dist * Math.cos(angle)),
         y: center.y - Math.floor(dist * Math.sin(angle))
       }
-      console.log(angle)
     }
     return pos
   }
