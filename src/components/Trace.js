@@ -116,8 +116,9 @@ const onChange = (step) => {
   window.app.updateState({ step: step })
 }
 
-const SortableItem = SortableElement(({item, step}) =>
+const SortableItem = SortableElement(({item, step, indent}) =>
   <div className="event" id={ step }
+       style={{ marginLeft: 20 * indent }}
        onClick={ () => { onChange(step) } }>
     <div className="content">
       <div className="summary">
@@ -135,9 +136,18 @@ const SortableList = SortableContainer(({items}) => {
   return (
     <div className="ui feed">
       <h4 className="ui header">Program</h4>
-      {items.map((item, index) => (
-        <SortableItem key={`item-${index}`} index={index} item={item} step={index} />
-      ))}
+      {items.map((item, index) => {
+        let indent = 0
+        for (let i = 1; i <= index; i++) {
+          if (items[i-1].type === 'LOOP') indent++
+          if (items[i].type === 'END_LOOP') indent--
+        }
+        items.map((item, i) => {
+        })
+        return (
+          <SortableItem key={`item-${index}`} index={index} item={item} step={index} indent={indent} />
+        )
+      })}
     </div>
   );
 })
