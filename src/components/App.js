@@ -4,28 +4,84 @@ import { bindActionCreators } from 'redux'
 import actions from '../redux/actions'
 import 'yuki-createjs'
 
+import Panel from './Panel'
+import Trace from './Trace'
+import Marker from './Marker'
+
 class App extends Component {
   constructor(props) {
     super(props)
     window.app = this
-
     this.update = true
-    let canvas = this.findDOMNode(this.refs.canvas);
-    this.stage = new createjs.Stage(canvas);
-    // this.stage.enableMouseOver(10);
+    this.animate = false
   }
 
   componentDidMount() {
+    this.stage = new createjs.Stage(this.refs.canvas)
+    this.stage.enableMouseOver(10)
+    this.resize()
+    createjs.Touch.enable(this.stage)
+    createjs.Ticker.on('tick', this.tick.bind(this))
+  }
+
+  tick(event) {
+    if (this.update || this.animate) {
+      this.update = false
+      this.stage.update(event)
+    }
+  }
+
+  updateState(state) {
+    let result = this.props.store.dispatch(actions.updateState(state))
+    return result.state
+  }
+
+  resize() {
+    this.stage.canvas.width = window.innerWidth - 250
+    this.stage.canvas.height = window.innerHeight
+  }
+
+  onClick() {
+    let coord
+    if (this.props.coord === 'xy') {
+      coord = 'polar'
+    } else {
+      coord = 'xy'
+    }
+
+    let step = this.props.step
+    let commands = _.clone(this.props.commands)
+    let command = commands[step]
+    if (command) {
+      command.attr.coord = coord
+      commands[step] = command
+    }
+    let current = this.stage.children.filter(a => a.isSelect)[0]
+    if (current) window.trace.update(current)
+    this.updateState({ coord: coord, commands: commands })
   }
 
   render() {
     return (
       <div>
-        <canvas ref="canvas" id="canvas" width="1000" height="800"></canvas>
+        <Panel
+          commands={ this.props.commands }
+          step={ this.props.step }
+          coord={ this.props.coord }
+        />
+        <canvas ref="canvas" id="canvas" width="1000" height="600"></canvas>
+        <button className="ui basic button" style={{ position: 'fixed', bottom: 20, right: 20 }} onClick={ this.onClick.bind(this) }>
+          Change Coordinates: <b>{ this.props.coord }</b>
+        </button>
       </div>
     )
   }
 }
+
+window.addEventListener('resize', () => {
+  if (window.app) window.app.resize()
+}, false)
+
 
 function mapStateToProps(state) {
   return state
@@ -38,29 +94,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
-
-/*
-        <Sidebar />
-        <Mode
-          mode={ this.props.mode }
-          path={ this.props.path }
-          store={ this.props.store }
-        />
-        <Canvas
-          mode={ this.props.mode }
-          drawing={ this.props.drawing }
-          active={ this.props.active }
-          point={ this.props.point }
-          start={ this.props.start }
-          path={ this.props.path }
-          offsetX={ this.props.offsetX }
-          offsetY={ this.props.offsetY }
-          store={ this.props.store }
-        />
-        <Panel
-          active={ this.props.active }
-          path={ this.props.path }
-          store={ this.props.store }
-        />
-
- */

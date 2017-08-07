@@ -11,14 +11,9 @@ import configureStore from './redux/store'
 import { Provider } from 'react-redux'
 
 let initialStore = {
-  mode: null,
-  drawing: false,
-  active: null,
-  point: null,
-  start: null,
-  path: null,
-  offsetX: 0,
-  offsetY: 0,
+  commands: [],
+  step: -1,
+  coord: 'polar'
 }
 
 let store = configureStore(initialStore)
@@ -30,12 +25,3 @@ render(
   document.getElementById('react-app')
 )
 
-/*
-createjs.Touch.enable(app.stage)
-createjs.Ticker.addEventListener('tick', (event) => {
-  if (app.update) {
-    app.update = false
-    app.stage.update(event)
-  }
-})
-*/

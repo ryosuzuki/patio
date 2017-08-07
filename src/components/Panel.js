@@ -1,68 +1,55 @@
+import React, { Component } from 'react'
 
+import Trace from './Trace'
 import Marker from './Marker'
-import Variable from './Variable'
 
-class Panel extends createjs.Shape {
-  constructor(app) {
+class Panel extends Component {
+  constructor() {
     super()
-
+    this.state = {
+      items: ['Locate', 'Move', 'Loop']
+    }
     this.app = app
-    this.graphics.beginFill('#eee')
-    this.graphics.drawRect(0, 0, 200, 800)
-    this.app.stage.addChild(this);
-
-    this.count = 0
-    this.object = null
+    window.panel = this
   }
 
-  add(name, color) {
-    let label = new createjs.Text(name, "18px Arial", "#000");
-    label.x = 10
-    label.y = 10 + 100 * this.count
-    this.app.stage.addChild(label);
-
-    let box = new createjs.Shape()
-    box.graphics.beginFill(color)
-    box.graphics.drawRect(0, 0, 50, 50)
-    box.x = 10
-    box.y = 30 + 100 * this.count
-
-    box.on('mousedown', (e) => {
-      console.log('down')
-      if (name === 'Marker') {
-        this.object = new Marker(this.app)
-      }
-      if (name === 'Variable') {
-        this.object = new Variable(this.app)
-      }
-      if (name === 'Record') {
-        let objects = this.app.stage.children.filter(object => object.isSelect)
-        if (objects.length > 0) {
-          objects[0].record()
-        }
-      }
-
-    })
-
-    box.on('pressmove', (e) => {
-      if (name === 'Marker') {
-        this.object.move()
-      }
-      if (name === 'Variable') {
-        this.object.x = this.app.stage.mouseX
-        this.object.y = this.app.stage.mouseY
-        this.app.update = true
-      }
-    })
-
-    box.on('pressup', (e) => {
-      console.log('up')
-    })
-
-    this.app.stage.addChild(box)
-    this.count++
+  componentDidMount() {
   }
+
+  onClick(item) {
+    console.log(item)
+    let type = item.toUpperCase()
+    window.trace.add(type)
+  }
+
+  render() {
+    return (
+      <div id="panel">
+        <div className="ui feed">
+          <h4 className="ui header">Command</h4>
+          { this.state.items.map((item) => {
+            return (
+              <div className={ "event" }  id={ item } key={ item } onClick={ this.onClick.bind(this, item) }>
+                <div className="content">
+                  <div className="summary">
+                    { item }
+                  </div>
+                  <div className="text">
+                  </div>
+                </div>
+              </div>
+            )
+          }) }
+        </div>
+        <Trace
+          commands={ this.props.commands }
+          step={ this.props.step }
+          coord={ this.props.coord }
+        />
+      </div>
+    )
+  }
+
 }
 
 export default Panel
-

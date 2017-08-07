@@ -1,17 +1,15 @@
 
 #canvas {
-  // margin-left: 300px;
+  margin-left: 250px;
 }
-
 
 #workspace {
   background: #444;
   margin-left: 300px
 }
 
-
-#sidebar {
-  width: 300px;
+#panel {
+  width: 250px;
   position: fixed;
   left: 0;
   top: 0;
@@ -21,7 +19,52 @@
   overflow-y: scroll;
 }
 
-#sidebar .input {
+.event {
+  padding: 10px 20px !important;
+  cursor: pointer;
+  text-align: center;
+}
+
+#panel .feed {
+  margin: 0px;
+}
+
+#panel .header {
+  margin: 0;
+  padding: 10px 20px !important;
+  background: #eaeaea;
+}
+
+#panel .slider-wrapper {
+  margin: 20px;
+}
+
+#panel .event:hover {
+  background-color: #efefef !important;
+}
+
+.event .text {
+  max-height: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event img {
+  width: 100%;
+}
+
+.event.select .text {
+  max-height: 550px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event .meta {
+  width: 100%;
+  float: left;
+}
+
+#panel .input {
   width: 280px;
   margin: 20px 10px;
 }
@@ -61,7 +104,7 @@
   color: #888;
 }
 
-
+/*
 #panel {
   width: 200px;
   position: fixed;
@@ -72,37 +115,8 @@
   box-shadow: inset -1px 0 0 rgba(0,0,0,.1);
   overflow-y: scroll;
 }
+*/
 
-.event {
-  padding: 20px !important;
-  cursor: pointer;
-  text-align: center;
-}
-
-#sidebar .event:hover {
-  background-color: #efefef !important;
-}
-
-.event .text {
-  max-height: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.event img {
-  width: 100%;
-}
-
-.event.select .text {
-  max-height: 550px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.event .meta {
-  width: 100%;
-  float: left;
-}
 
 #color-picker-cover {
   position: fixed;
