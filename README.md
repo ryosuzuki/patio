@@ -1,2 +1,3 @@
-# swarm-programming
-Tangible Object-oriented Programming for Swarm User Interfaces
+# Patio
+
+Augmented Tangible Programming Environments for Swarm User Interfaces
